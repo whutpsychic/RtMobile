@@ -1,7 +1,9 @@
 <template>
   <van-nav-bar :style="`padding-top:${safeTop}px;`" :title="title" :left-text="withBackupBtn ? `返回` : undefined"
     :left-arrow="withBackupBtn ? true : false" @click-left="backup" />
-  <slot></slot>
+  <div class="body-can">
+    <slot></slot>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -1,0 +1,79 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" version="29.2.4">
+  <diagram name="第 1 页" id="0NZV8BsIoJ89HhK71lh_">
+    <mxGraphModel dx="1213" dy="730" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="anFY0XswdDSDf_3dv63Y-4" edge="1" parent="1" source="anFY0XswdDSDf_3dv63Y-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="anFY0XswdDSDf_3dv63Y-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="anFY0XswdDSDf_3dv63Y-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="开始" vertex="1">
+          <mxGeometry height="60" width="120" x="354" y="110" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-3" edge="1" parent="1" source="anFY0XswdDSDf_3dv63Y-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-7" edge="1" parent="1" source="anFY0XswdDSDf_3dv63Y-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="anFY0XswdDSDf_3dv63Y-2" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="监听是否链接&lt;div&gt;网络&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="174" x="327" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-18" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="提示没有网络连接" vertex="1">
+          <mxGeometry height="60" width="120" x="70" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-10" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-13" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-5" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="读取本地存储数据，看有没有url" vertex="1">
+          <mxGeometry height="120" width="183" x="322" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="没有网" vertex="1">
+          <mxGeometry height="30" width="60" x="210" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;有网&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="410" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-20" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-19">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="跳转到《url配置页面》" vertex="1">
+          <mxGeometry height="60" width="120" x="630" y="600" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-11" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;没有url&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="570" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-22" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="跳转到《主显示前置页》&lt;div&gt;停留1.2s后跳转至&lt;/div&gt;&lt;div&gt;《主显示页》&lt;/div&gt;" vertex="1">
+          <mxGeometry height="130" width="176" x="325" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-14" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;有url&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="410" y="585" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="跳转到《错误页》" vertex="1">
+          <mxGeometry height="60" width="120" x="70" y="640" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-19" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="配置好url并保存到本地存储&lt;div&gt;然后跳转到&lt;/div&gt;&lt;div&gt;《主显示页》&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="630" y="750" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-24" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="Ga1epeNZAy7-aSHcpKWr-23">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-21" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;br&gt;&lt;div&gt;《主显示页》&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="176" x="325" y="890" as="geometry" />
+        </mxCell>
+        <mxCell id="Ga1epeNZAy7-aSHcpKWr-23" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="结束" vertex="1">
+          <mxGeometry height="60" width="120" x="353" y="1050" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

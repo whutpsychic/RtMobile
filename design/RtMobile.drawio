@@ -1,77 +1,91 @@
-<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36" version="29.2.4">
-  <diagram name="第 1 页" id="0NZV8BsIoJ89HhK71lh_">
-    <mxGraphModel dx="1213" dy="730" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36" version="29.2.7">
+  <diagram name="第 1 页" id="UIzMqcBWD6AFtWezvsQM">
+    <mxGraphModel dx="1158" dy="668" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="anFY0XswdDSDf_3dv63Y-4" edge="1" parent="1" source="anFY0XswdDSDf_3dv63Y-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="anFY0XswdDSDf_3dv63Y-2">
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-2" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="开始" vertex="1">
+          <mxGeometry height="60" width="120" x="120" y="170" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-4" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="G8Gh_AuvDAt-s8JKTrmD-10">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="anFY0XswdDSDf_3dv63Y-1" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="开始" vertex="1">
-          <mxGeometry height="60" width="120" x="354" y="110" as="geometry" />
-        </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-3" edge="1" parent="1" source="anFY0XswdDSDf_3dv63Y-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-2">
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-30" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="G8Gh_AuvDAt-s8JKTrmD-7">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-7" edge="1" parent="1" source="anFY0XswdDSDf_3dv63Y-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-5">
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-5" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="监听是否链接&lt;div&gt;网络&lt;/div&gt;" vertex="1">
+          <mxGeometry height="120" width="174" x="324.5" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-29" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="G8Gh_AuvDAt-s8JKTrmD-38">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="600" y="240" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="提示没有网络连接" vertex="1">
+          <mxGeometry height="60" width="120" x="630" y="310" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-41" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="G8Gh_AuvDAt-s8JKTrmD-22">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="anFY0XswdDSDf_3dv63Y-2" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="监听是否链接&lt;div&gt;网络&lt;/div&gt;" vertex="1">
-          <mxGeometry height="120" width="174" x="327" y="250" as="geometry" />
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-10" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="读取本地存储数据，看有没有url" vertex="1">
+          <mxGeometry height="120" width="183" x="320" y="480" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-18" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-17">
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-11" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="没有网" vertex="1">
+          <mxGeometry height="30" width="60" x="414" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-12" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;有网&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="366" y="390" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-15" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;没有url&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="264.5" y="510" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-18" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;有url&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="410" y="650" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-22" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="停留1.2s之后跳转" vertex="1">
+          <mxGeometry height="60" width="176" x="323.5" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-23" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="结束" vertex="1">
+          <mxGeometry height="60" width="120" x="130" y="870" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-28" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-24" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="G8Gh_AuvDAt-s8JKTrmD-5">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="提示没有网络连接" vertex="1">
-          <mxGeometry height="60" width="120" x="70" y="470" as="geometry" />
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-24" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="《起始页》" vertex="1">
+          <mxGeometry height="100" width="80" x="150" y="290" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-10" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-9">
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-27" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.425;entryY=-0.02;entryDx=0;entryDy=0;entryPerimeter=0;" target="G8Gh_AuvDAt-s8JKTrmD-24">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-13" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-12">
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-31" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="《url配置页》" vertex="1">
+          <mxGeometry height="100" width="80" x="150" y="470" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-32" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=80;entryDy=65;entryPerimeter=0;" target="G8Gh_AuvDAt-s8JKTrmD-31">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-5" parent="1" style="rhombus;whiteSpace=wrap;html=1;" value="读取本地存储数据，看有没有url" vertex="1">
-          <mxGeometry height="120" width="183" x="322" y="440" as="geometry" />
-        </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="没有网" vertex="1">
-          <mxGeometry height="30" width="60" x="210" y="270" as="geometry" />
-        </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-8" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;有网&lt;/span&gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="30" width="60" x="410" y="390" as="geometry" />
-        </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-20" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-19">
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-43" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-33" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="G8Gh_AuvDAt-s8JKTrmD-23">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="跳转到《url配置页面》" vertex="1">
-          <mxGeometry height="60" width="120" x="630" y="600" as="geometry" />
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-33" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="《主显示页》" vertex="1">
+          <mxGeometry height="100" width="80" x="150" y="695" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-11" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;没有url&lt;/span&gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="30" width="60" x="570" y="470" as="geometry" />
-        </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-22" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ga1epeNZAy7-aSHcpKWr-21">
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-34" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-31" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;" target="G8Gh_AuvDAt-s8JKTrmD-33">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-12" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="跳转到《主显示前置页》&lt;div&gt;停留1.2s后跳转至&lt;/div&gt;&lt;div&gt;《主显示页》&lt;/div&gt;" vertex="1">
-          <mxGeometry height="130" width="176" x="325" y="640" as="geometry" />
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-35" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="配置好url并保存到本地存储&lt;div&gt;然后跳转到&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="80" x="190" y="620" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-14" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;有url&lt;/span&gt;&lt;/div&gt;" vertex="1">
-          <mxGeometry height="30" width="60" x="410" y="585" as="geometry" />
-        </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="跳转到《错误页》" vertex="1">
-          <mxGeometry height="60" width="120" x="70" y="640" as="geometry" />
-        </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-19" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="配置好url并保存到本地存储&lt;div&gt;然后跳转到&lt;/div&gt;&lt;div&gt;《主显示页》&lt;/div&gt;" vertex="1">
-          <mxGeometry height="60" width="120" x="630" y="750" as="geometry" />
-        </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-24" edge="1" parent="1" source="Ga1epeNZAy7-aSHcpKWr-21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="Ga1epeNZAy7-aSHcpKWr-23">
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-40" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-38" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="G8Gh_AuvDAt-s8JKTrmD-39">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-21" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;br&gt;&lt;div&gt;《主显示页》&lt;/div&gt;" vertex="1">
-          <mxGeometry height="60" width="176" x="325" y="890" as="geometry" />
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-38" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;" value="《网络错误页&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;》&lt;/span&gt;" vertex="1">
+          <mxGeometry height="100" width="100" x="640" y="480" as="geometry" />
         </mxCell>
-        <mxCell id="Ga1epeNZAy7-aSHcpKWr-23" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="结束" vertex="1">
-          <mxGeometry height="60" width="120" x="353" y="1050" as="geometry" />
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-39" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;监听网络变化状态，当恢复网络时，再后退回《起始页》&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="630" y="730" as="geometry" />
+        </mxCell>
+        <mxCell id="G8Gh_AuvDAt-s8JKTrmD-42" edge="1" parent="1" source="G8Gh_AuvDAt-s8JKTrmD-22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0;entryDx=80;entryDy=65;entryPerimeter=0;" target="G8Gh_AuvDAt-s8JKTrmD-33">
+          <mxGeometry relative="1" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>

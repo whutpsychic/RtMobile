@@ -1,0 +1,131 @@
+// url配置页
+
+import SwiftUI
+
+struct UrlConfig: View {
+    @Binding var isPresented: Bool // 用于返回（可选）
+    @State private var showAlert: Bool = false // 错误提示
+    // 表单数据
+    @State private var serverUrl = "https://api.example.com"
+    @State private var useHttps = true
+    @State private var timeout: Int = 30
+    @State private var environment = 0 // 0: 生产, 1: 测试, 2: 开发
+    
+    // 检查一个url是否是合法url
+    private func isValidURL(_ urlString: String) -> Bool {
+        // 1. 先尝试创建 URL 对象
+        guard let url = URL(string: urlString) else {
+            return false
+        }
+        
+        // 2. 检查必须包含协议（scheme）和主机（host）
+        guard url.scheme != nil, url.host != nil else {
+            return false
+        }
+        
+        // 3. 可选：只允许 http 或 https
+        let allowedSchemes = ["http", "https"]
+        if let scheme = url.scheme?.lowercased(),
+           !allowedSchemes.contains(scheme) {
+            return false
+        }
+        
+        return true
+    }
+    
+    // 将头部http模式换掉
+    private func changeUrlHeadByType(useHttps:Bool){
+        if(useHttps){
+            if serverUrl.hasPrefix("http://") {
+                let result = serverUrl.replacingOccurrences(of: "http://", with: "https://")
+                serverUrl = result
+            }
+            
+        }else{
+            if serverUrl.hasPrefix("https://") {
+                let result = serverUrl.replacingOccurrences(of: "https://", with: "http://")
+                serverUrl = result
+            }
+        }
+    }
+    
+    var body: some View {
+        NavigationStack {
+            VStack {
+                // 主表单
+                Form {
+                    Section("服务器地址") {
+                        HStack{
+                            TextField("请输入 URL", text: $serverUrl)
+                                .textInputAutocapitalization(.never)
+                                .keyboardType(.URL)
+                                .disableAutocorrection(true)
+                            
+                            // 扫码按钮（使用 SF Symbol 图标）
+                            Button(action: {
+                                // 这里处理扫码逻辑
+                                print("开始扫码...")
+                                //                                startScanning()
+                            }) {
+                                Image(systemName: "qrcode.viewfinder")
+                                    .foregroundColor(.blue)
+                                    .font(.title2)
+                            }
+                            .buttonStyle(PlainButtonStyle()) // 去掉默认高亮
+                        }
+                    }
+                    
+                    Section("连接选项") {
+                        Toggle("使用 HTTPS", isOn: $useHttps)
+                            .onChange(of: useHttps) { oldValue, newValue in
+                                // iOS 17+ 语法（两个参数）
+                                changeUrlHeadByType(useHttps: newValue)
+                            }
+                        //                        Picker("超时时间 (秒)", selection: $timeout) {
+                        //                            ForEach([10, 20, 30, 60], id: \.self) { seconds in
+                        //                                Text("\(seconds) 秒").tag(seconds)
+                        //                            }
+                        //                        }
+                        //                        .pickerStyle(MenuPickerStyle()) // 弹出菜单样式（iOS 风格）
+                    }
+                    
+                }
+                .navigationTitle("URL 设置")
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button("取消") {
+                            isPresented = false
+                        }
+                        .foregroundColor(.primary)
+                    }
+                    
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("保存") {
+                            // 这里可以保存到 UserDefaults 或 AppSettings
+                            print("保存 URL: \(serverUrl)")
+                            // 合法地址
+                            if(isValidURL(serverUrl)){
+                                isPresented = false
+                            }
+                            // 非法地址
+                            else{
+                                // 提示
+                                showAlert=true
+                            }
+                        }
+                        .fontWeight(.semibold)
+                    }
+                }
+            }
+            .alert("警告", isPresented: $showAlert) {
+                Button("重新输入", role: .cancel) { }
+            } message: {
+                Text("不正确的地址").padding()
+            }
+        }
+    }
+}
+
+#Preview {
+    Preopen()
+}

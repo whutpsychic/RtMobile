@@ -11,28 +11,6 @@ struct UrlConfig: View {
     @State private var timeout: Int = 30
     @State private var environment = 0 // 0: 生产, 1: 测试, 2: 开发
     
-    // 检查一个url是否是合法url
-    private func isValidURL(_ urlString: String) -> Bool {
-        // 1. 先尝试创建 URL 对象
-        guard let url = URL(string: urlString) else {
-            return false
-        }
-        
-        // 2. 检查必须包含协议（scheme）和主机（host）
-        guard url.scheme != nil, url.host != nil else {
-            return false
-        }
-        
-        // 3. 可选：只允许 http 或 https
-        let allowedSchemes = ["http", "https"]
-        if let scheme = url.scheme?.lowercased(),
-           !allowedSchemes.contains(scheme) {
-            return false
-        }
-        
-        return true
-    }
-    
     // 将头部http模式换掉
     private func changeUrlHeadByType(useHttps:Bool){
         if(useHttps){
@@ -47,6 +25,11 @@ struct UrlConfig: View {
                 serverUrl = result
             }
         }
+    }
+    
+    // 开始扫码
+    private func startScanning(){
+        
     }
     
     var body: some View {
@@ -65,7 +48,7 @@ struct UrlConfig: View {
                             Button(action: {
                                 // 这里处理扫码逻辑
                                 print("开始扫码...")
-                                //                                startScanning()
+                                startScanning()
                             }) {
                                 Image(systemName: "qrcode.viewfinder")
                                     .foregroundColor(.blue)
@@ -127,5 +110,6 @@ struct UrlConfig: View {
 }
 
 #Preview {
-    Preopen()
+    Preopen(onShouldNavigate: { route in
+    })
 }

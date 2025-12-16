@@ -13,6 +13,9 @@ struct UrlConfig: View {
     @State private var scannedResult: String? // 扫码结果
     //    @State private var timeout: Int = 30
     
+    // 当网络恢复时的回调函数
+    let onSaveUrl: () -> Void
+    
     // 将头部http模式换掉
     private func changeUrlHeadByType(useHttps:Bool){
         if(useHttps){
@@ -49,6 +52,7 @@ struct UrlConfig: View {
             isPresented = false
             // 保存到本地
             UserDefaults.standard.set(serverUrl, forKey: "localUrl")
+            onSaveUrl() // 回调
         }
         // 非法地址
         else{
@@ -101,15 +105,24 @@ struct UrlConfig: View {
                 .fullScreenCover(isPresented: $isScanning) {
                     CodeScannerView { result in
                         scannedResult = result.stringValue
-                        let _url =  result.stringValue
+                        // 计算属性：自动清理后的 URL
+                        var cleanedUrl: String {
+                            return scannedResult!.trimmingCharacters(in: .whitespacesAndNewlines)
+                        }
                         if(useHttps){
-                            if(!_url.contains("https://")){
-                                serverUrl = "https://" + _url
+                            if(!(cleanedUrl.contains("https://"))){
+                                serverUrl = "https://" + cleanedUrl
+                            }
+                            else{
+                                serverUrl = cleanedUrl
                             }
                         }
                         else{
-                            if(!_url.contains("http://")){
-                                serverUrl = "http://" + _url
+                            if(!(cleanedUrl.contains("http://"))){
+                                serverUrl = "http://" + cleanedUrl
+                            }
+                            else{
+                                serverUrl = cleanedUrl
                             }
                         }
                         isScanning = false
@@ -140,6 +153,6 @@ struct UrlConfig: View {
 }
 
 #Preview {
-    Preopen(onShouldNavigate: { route in
+    Preopen(goto: { route in
     })
 }

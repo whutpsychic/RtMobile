@@ -18,7 +18,7 @@ struct RtMobileApp: App {
         WindowGroup {
             NavigationStack(path: $path){
                 // 《前置页》
-                Preopen(onShouldNavigate: { route in
+                Preopen(goto: { route in
                     if let route = route {
                         path.append(route)
                     }
@@ -36,6 +36,9 @@ struct RtMobileApp: App {
                                 }
                             }
                         }.navigationBarHidden(true)  // 👈 隐藏整个导航栏
+                    }
+                    if route == "webview" {
+                        MainWebview().navigationBarHidden(true)  // 👈 隐藏整个导航栏
                     }
                 }
             }

@@ -1,15 +1,17 @@
 // url配置页
-
 import SwiftUI
 
 struct UrlConfig: View {
     @Binding var isPresented: Bool // 用于返回（可选）
-    @State private var showAlert: Bool = false // 错误提示
+    @AppStorage("localUrl") var serverUrl: String = "https://"
+    
+    @State private var isScanning: Bool = false // 正在扫码
+    @State private var showAlert: Bool = false // 显示错误提示
     // 表单数据
-    @State private var serverUrl = "https://api.example.com"
     @State private var useHttps = true
-    @State private var timeout: Int = 30
-    @State private var environment = 0 // 0: 生产, 1: 测试, 2: 开发
+    
+    @State private var scannedResult: String? // 扫码结果
+    //    @State private var timeout: Int = 30
     
     // 将头部http模式换掉
     private func changeUrlHeadByType(useHttps:Bool){
@@ -18,18 +20,41 @@ struct UrlConfig: View {
                 let result = serverUrl.replacingOccurrences(of: "http://", with: "https://")
                 serverUrl = result
             }
-            
+            if(!serverUrl.contains("https://")){
+                serverUrl = "https://" + serverUrl
+            }
         }else{
             if serverUrl.hasPrefix("https://") {
                 let result = serverUrl.replacingOccurrences(of: "https://", with: "http://")
                 serverUrl = result
+            }
+            if(!serverUrl.contains("http://")){
+                serverUrl = "http://" + serverUrl
             }
         }
     }
     
     // 开始扫码
     private func startScanning(){
-        
+        isScanning = true
+    }
+    
+    // 点击保存
+    private func onSave(){
+        // 这里可以保存到 UserDefaults 或 AppSettings
+        print("保存 URL: \(serverUrl)")
+        // 合法地址
+        if(isValidURL(serverUrl)){
+            // 收起面板
+            isPresented = false
+            // 保存到本地
+            UserDefaults.standard.set(serverUrl, forKey: "localUrl")
+        }
+        // 非法地址
+        else{
+            // 提示
+            showAlert = true
+        }
     }
     
     var body: some View {
@@ -71,9 +96,25 @@ struct UrlConfig: View {
                         //                        }
                         //                        .pickerStyle(MenuPickerStyle()) // 弹出菜单样式（iOS 风格）
                     }
-                    
                 }
                 .navigationTitle("URL 设置")
+                .fullScreenCover(isPresented: $isScanning) {
+                    CodeScannerView { result in
+                        scannedResult = result.stringValue
+                        let _url =  result.stringValue
+                        if(useHttps){
+                            if(!_url.contains("https://")){
+                                serverUrl = "https://" + _url
+                            }
+                        }
+                        else{
+                            if(!_url.contains("http://")){
+                                serverUrl = "http://" + _url
+                            }
+                        }
+                        isScanning = false
+                    }.edgesIgnoringSafeArea(.all)
+                }
                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button("取消") {
@@ -81,20 +122,9 @@ struct UrlConfig: View {
                         }
                         .foregroundColor(.primary)
                     }
-                    
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button("保存") {
-                            // 这里可以保存到 UserDefaults 或 AppSettings
-                            print("保存 URL: \(serverUrl)")
-                            // 合法地址
-                            if(isValidURL(serverUrl)){
-                                isPresented = false
-                            }
-                            // 非法地址
-                            else{
-                                // 提示
-                                showAlert=true
-                            }
+                            onSave()
                         }
                         .fontWeight(.semibold)
                     }

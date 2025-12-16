@@ -1,9 +1,9 @@
 // 打开App之前的逻辑处理
 import SwiftUI
-
+import AudioToolbox
 
 struct Preopen: View {
-    @AppStorage("localUrl") var localUrl: String = ""
+    @AppStorage("localUrl") var localUrl: String?
     @ObservedObject private var networkMonitor = NetworkMonitor.shared
     @State private var alreadyDone = false // 防重复触发
     
@@ -14,11 +14,19 @@ struct Preopen: View {
     private func onMounted(){
         // 判断网络连接情况
         let isConnected = networkMonitor.isConnected
-        dprint("c?",isConnected)
         // 已经联网
-        if(isConnected && !alreadyDone){
+        if(isConnected){
             // 尝试读取本地地址
-            
+            dprint("url", localUrl as Any)
+            // 如果有地址
+            if let urlStr = localUrl, !urlStr.isEmpty {
+                print("有有效内容：\(urlStr)")
+                // 前往页面
+            } else {
+                print("是 nil 或空字符串")
+                // 自动弹起地址配置
+                showUrlPage = true
+            }
         }
         // 没有网络
         else if(!alreadyDone){
@@ -49,6 +57,7 @@ struct Preopen: View {
                 DispatchQueue.main.async {
                     onMounted()
                 }
+                print("onAppear")
             }
         }
     }

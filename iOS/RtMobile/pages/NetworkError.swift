@@ -10,7 +10,6 @@ struct NetworkError: View {
     let onNetworkRestored: () -> Void
     
     private func onListen(_ isConnected: Bool){
-        print("onListen")
         // 判断网络连接情况
         if isConnected  {
             onNetworkRestored()

@@ -4,7 +4,8 @@
 //
 //  Created by zbc0012 on 2025/12/13.
 //
-//@AppStorage("localUrl") var localUrl:String = ""  // 本地存储的url
+// @AppStorage("localUrl") var localUrl:String = ""  // 本地存储的url
+// UserDefaults.standard.set(localUrl, forKey: "localUrl")
 
 import SwiftUI
 
@@ -30,7 +31,6 @@ struct RtMobileApp: App {
                         NetworkError{
                             // 网络恢复，返回上一页
                             DispatchQueue.main.async {
-                                print(" - - - - - - -")
                                 if !path.isEmpty {
                                     path.removeLast()
                                 }

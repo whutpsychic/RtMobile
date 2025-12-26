@@ -4,17 +4,8 @@
 import SwiftUI
 
 struct NetworkError: View {
+    @EnvironmentObject var router: Router
     @ObservedObject private var networkMonitor = NetworkMonitor.shared
-    
-    // 当网络恢复时的回调函数
-    let onNetworkRestored: () -> Void
-    
-    private func onListen(_ isConnected: Bool){
-        // 判断网络连接情况
-        if isConnected  {
-            onNetworkRestored()
-        }
-    }
     
     var body: some View {
         VStack {
@@ -31,9 +22,16 @@ struct NetworkError: View {
                 .foregroundColor(.secondary)
         }
         .onReceive(networkMonitor.$isConnected) { isConnected in
-            onListen(isConnected)
+            // 判断网络连接情况
+            if isConnected  {
+                router.goBack()
+            }
         }
         .padding()
         
     }
+}
+
+#Preview {
+    NetworkError()
 }

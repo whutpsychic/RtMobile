@@ -1,16 +1,108 @@
-// MWebView.swift
 import SwiftUI
 import WebKit
+import Combine
 
+// 证书挑战信息结构
+struct CertificateChallengeInfo {
+    let challenge: URLAuthenticationChallenge
+    let completionHandler: (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
+}
+
+// WebView 状态管理器
+class WebViewManager: ObservableObject {
+    @Published var progress: Double = 0.0 // 加载进度条
+    @Published var isLoading: Bool = true // 网页加载中
+    @Published var canGoBack: Bool = false // 网页路由可后退
+    @Published var canGoForward: Bool = false // 网页路由可前进
+    @Published var errorMessage: String = "" // 错误信息
+    @Published var showCertificateAlert: Bool = false // 显示不信任的证书提示
+    @Published var certificateChallengeInfo: CertificateChallengeInfo?
+    @Published var trustedHosts: Set<String> = [] // 信任的地址
+    
+    @Published var receivedDataFromJS: String = "" // 接收到的来自js的数据
+    weak var webView: WKWebView?
+    
+    init() {
+        // 从存储加载已信任的服务器地址
+        loadTrustedHostsFromStorage()
+    }
+    
+    // 发送数据到JavaScript
+    func sendToJS(data: String) {
+        print(" ------- \(data) ------- ")
+//        guard let webView = webView else { return }
+        let script = "window.receiveFromSwift('\(data)')"
+        print(" ------- \(script) ------- ")
+        print(webView as Any)
+        webView?.evaluateJavaScript(script) { result, error in
+            if let error = error {
+                print("发送到JS失败: \(error)")
+            } else {
+                print("成功发送到JS: \(data)")
+            }
+        }
+    }
+    
+    // 回调函数，用于处理来自JS的特殊命令
+    var onJSCommand: ((String) -> Void)?
+    
+    // 接收来自JavaScript的数据
+    func receiveFromJS(data: String) {
+        DispatchQueue.main.async {
+            print(" ----------- received data from js -----------")
+            print(data)
+            self.receivedDataFromJS = data
+            if(data == "scan"){
+                // 调用回调函数来更新SwiftUI状态
+                self.onJSCommand?("scan")
+            }
+        }
+    }
+    
+    // 从 UserDefaults 加载信任的主机列表
+    private func loadTrustedHostsFromStorage() {
+        if let data = UserDefaults.standard.data(forKey: "trustedHosts"),
+           let hosts = try? JSONDecoder().decode(Set<String>.self, from: data) {
+            DispatchQueue.main.async {
+                self.trustedHosts = hosts
+            }
+        }
+    }
+    
+    // 保存信任的主机列表到 UserDefaults
+    func saveTrustedHosts() {
+        if let data = try? JSONEncoder().encode(trustedHosts) {
+            UserDefaults.standard.set(data, forKey: "trustedHosts")
+        }
+    }
+    
+    // 重置所有状态（可选功能）
+    func resetState() {
+        DispatchQueue.main.async {
+            self.progress = 0.0
+            self.isLoading = true
+            self.canGoBack = false
+            self.canGoForward = false
+            self.errorMessage = ""
+            self.showCertificateAlert = false
+            self.certificateChallengeInfo = nil
+        }
+    }
+}
+
+// MWebView 组件
 struct MWebView: UIViewRepresentable {
-    @AppStorage("localUrl") var localUrl: String?
-    @Binding var progress: Double
-    @Binding var isLoading: Bool
-    @Binding var canGoBack: Bool
-    @Binding var canGoForward: Bool
+    let url: String?
+    @ObservedObject var manager: WebViewManager
     
     func makeUIView(context: Context) -> WKWebView {
-        let webView = WKWebView()
+        // 配置WKWebView
+        let configuration = WKWebViewConfiguration()
+        configuration.userContentController.add(context.coordinator, name: "swiftHandler")
+        
+        let webView = WKWebView(frame: .zero, configuration: configuration)
+        context.coordinator.manager.webView = webView
+
         webView.navigationDelegate = context.coordinator
         webView.addObserver(
             context.coordinator,
@@ -23,7 +115,7 @@ struct MWebView: UIViewRepresentable {
         webView.allowsBackForwardNavigationGestures = true
         
         // 只在创建时加载一次 URL
-        if let urlString = localUrl, let url = URL(string: urlString) {
+        if let urlString = url, let url = URL(string: urlString) {
             print("📱 WebView 创建，加载: \(urlString)")
             webView.load(URLRequest(url: url))
         }
@@ -36,34 +128,32 @@ struct MWebView: UIViewRepresentable {
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(
-            progress: $progress,
-            isLoading: $isLoading,
-            canGoBack: $canGoBack,
-            canGoForward: $canGoForward
-        )
+        Coordinator(manager: manager)
     }
     
     func dismantleUIView(_ uiView: WKWebView, coordinator: Coordinator) {
         uiView.removeObserver(coordinator, forKeyPath: #keyPath(WKWebView.estimatedProgress))
     }
     
-    class Coordinator: NSObject, WKNavigationDelegate {
-        @Binding var progress: Double
-        @Binding var isLoading: Bool
-        @Binding var canGoBack: Bool
-        @Binding var canGoForward: Bool
+    class Coordinator: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
+        @ObservedObject var manager: WebViewManager
         
-        init(
-            progress: Binding<Double>,
-            isLoading: Binding<Bool>,
-            canGoBack: Binding<Bool>,
-            canGoForward: Binding<Bool>
-        ) {
-            self._progress = progress
-            self._isLoading = isLoading
-            self._canGoBack = canGoBack
-            self._canGoForward = canGoForward
+        init(manager: WebViewManager) {
+            self.manager = manager
+        }
+        
+        // 接收JavaScript消息
+        func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+            if message.name == "swiftHandler" {
+                if let body = message.body as? String {
+                    manager.receiveFromJS(data: body)
+                } else if let body = message.body as? [String: Any] {
+                    // 处理复杂对象
+                    let jsonData = try? JSONSerialization.data(withJSONObject: body)
+                    let jsonString = String(data: jsonData!, encoding: .utf8)
+                    manager.receiveFromJS(data: jsonString ?? "")
+                }
+            }
         }
         
         override func observeValue(
@@ -73,10 +163,9 @@ struct MWebView: UIViewRepresentable {
             context: UnsafeMutableRawPointer?
         ) {
             if keyPath == "estimatedProgress", let webView = object as? WKWebView {
-                // 👇 使用 DispatchQueue.main.async 确保在主线程更新状态
                 DispatchQueue.main.async {
-                    self.progress = webView.estimatedProgress
-                    self.isLoading = webView.estimatedProgress < 1.0
+                    self.manager.progress = webView.estimatedProgress
+                    self.manager.isLoading = webView.estimatedProgress < 1.0
                 }
             }
         }
@@ -84,50 +173,72 @@ struct MWebView: UIViewRepresentable {
         // 监听导航状态变化
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
             DispatchQueue.main.async {
-                self.canGoBack = webView.canGoBack
-                self.canGoForward = webView.canGoForward
-                self.isLoading = false
+                self.manager.canGoBack = webView.canGoBack
+                self.manager.canGoForward = webView.canGoForward
+                self.manager.isLoading = false
+                self.manager.errorMessage = ""
             }
         }
         
         func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
             DispatchQueue.main.async {
-                self.canGoBack = webView.canGoBack
-                self.canGoForward = webView.canGoForward
-                self.isLoading = false
+                self.manager.canGoBack = webView.canGoBack
+                self.manager.canGoForward = webView.canGoForward
+                self.manager.isLoading = false
+                if let nsError = error as NSError?,
+                   nsError.code == NSURLErrorServerCertificateUntrusted ||
+                    nsError.code == NSURLErrorSecureConnectionFailed {
+                    self.manager.errorMessage = "SSL证书不受信任，无法连接到服务器"
+                } else {
+                    self.manager.errorMessage = "网页加载失败: \(error.localizedDescription)"
+                }
             }
         }
         
-        // 只对特定 IP 地址信任自签名证书
+        // 处理证书挑战
         func webView(
             _ webView: WKWebView,
             didReceive challenge: URLAuthenticationChallenge,
             completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void
         ) {
             let host = challenge.protectionSpace.host
-            let trustedIPs = ["192.168.0.11", "192.168.0.12"]
-            let isTrustedHost = trustedIPs.contains(host)
             
-            guard isTrustedHost else {
-                completionHandler(.performDefaultHandling, nil)
+            // 如果主机已经在信任列表中，直接信任
+            if manager.trustedHosts.contains(host) {
+                print("✅ 主机 \(host) 已在信任列表中，自动信任证书")
+                if let serverTrust = challenge.protectionSpace.serverTrust {
+                    let credential = URLCredential(trust: serverTrust)
+                    completionHandler(.useCredential, credential)
+                } else {
+                    completionHandler(.performDefaultHandling, nil)
+                }
                 return
             }
             
-            guard let serverTrust = challenge.protectionSpace.serverTrust else {
-                completionHandler(.performDefaultHandling, nil)
-                return
+            // 检查是否为自签名证书错误
+            if challenge.protectionSpace.authenticationMethod == NSURLAuthenticationMethodServerTrust,
+               let serverTrust = challenge.protectionSpace.serverTrust {
+                
+                var error: CFError?
+                let isTrusted = SecTrustEvaluateWithError(serverTrust, &error)
+                
+                if !isTrusted {
+                    // 证书不被信任，保存挑战信息并显示用户确认警告
+                    DispatchQueue.main.async {
+                        self.manager.certificateChallengeInfo = CertificateChallengeInfo(
+                            challenge: challenge,
+                            completionHandler: completionHandler
+                        )
+                        self.manager.showCertificateAlert = true
+                    }
+                    
+                    // 暂时挂起请求，等待用户决定
+                    return
+                }
             }
             
-            var error: CFError?
-            let isTrusted = SecTrustEvaluateWithError(serverTrust, &error)
-            
-            if isTrusted {
-                completionHandler(.performDefaultHandling, nil)
-            } else {
-                print("⚠️ 自动信任 \(host) 的自签名证书")
-                let credential = URLCredential(trust: serverTrust)
-                completionHandler(.useCredential, credential)
-            }
+            // 默认处理
+            completionHandler(.performDefaultHandling, nil)
         }
     }
 }

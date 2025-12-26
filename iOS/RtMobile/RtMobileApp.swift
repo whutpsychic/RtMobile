@@ -1,46 +1,53 @@
-//
-//  RtMobileApp.swift
-//  RtMobile
-//
-//  Created by zbc0012 on 2025/12/13.
-//
-// @AppStorage("localUrl") var localUrl:String = ""  // 本地存储的url
-// UserDefaults.standard.set(localUrl, forKey: "localUrl")
-
 import SwiftUI
+import Combine
 
+// 路由状态管理器
+class Router: ObservableObject {
+    @Published var path: NavigationPath
+    
+    init() {
+        self.path = NavigationPath()
+    }
+    
+    func navigate(to item: String) {
+        path.append(item)
+    }
+    
+    func goBack() {
+        if !path.isEmpty {
+            path.removeLast()
+        }
+    }
+    
+    func clear() {
+        path = NavigationPath()
+    }
+}
+
+// App 结构
 @main
-struct RtMobileApp: App {
-    @State public var path = NavigationPath()
-    @StateObject private var networkMonitor = NetworkMonitor.shared
+struct MyApp: App {
+    @StateObject private var router = Router() // 路由管理
+    @StateObject private var webViewManager = WebViewManager() // webview管理
+    @StateObject private var appConfig = AppConfig() // app设置
     
     var body: some Scene {
         WindowGroup {
-            NavigationStack(path: $path){
-                // 《前置页》
-                Preopen(goto: { route in
-                    if let route = route {
-                        path.append(route)
+            NavigationStack(path: $router.path) {
+                // 初始页面
+                Preopen().environmentObject(router).environmentObject(appConfig)
+                // 路由管理
+                    .navigationDestination(for: String.self) { route in
+                        switch route {
+                        case "noNetwork":
+                            NetworkError().environmentObject(router).navigationBarBackButtonHidden()
+                        case "webview":
+                            MainWebview(webViewManager: webViewManager).environmentObject(router).environmentObject(appConfig).navigationBarBackButtonHidden()
+                                .ignoresSafeArea(edges: .top)
+                        default:
+                            NavigationError().environmentObject(router)
+                        }
                     }
-                })
-                .environmentObject(networkMonitor)
-                .navigationDestination(for: String.self) { route in
-                    // 根据 route 类型决定目标页面
-                    // 《网络错误页》
-                    if route == "noNetwork" {
-                        NetworkError{
-                            // 网络恢复，返回上一页
-                            DispatchQueue.main.async {
-                                if !path.isEmpty {
-                                    path.removeLast()
-                                }
-                            }
-                        }.navigationBarHidden(true)  // 👈 隐藏整个导航栏
-                    }
-                    if route == "webview" {
-                        MainWebview().navigationBarHidden(true)  // 👈 隐藏整个导航栏
-                    }
-                }
             }
         }
     }

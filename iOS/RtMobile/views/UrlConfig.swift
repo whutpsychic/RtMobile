@@ -11,7 +11,6 @@ struct UrlConfig: View {
     @State private var useHttps = true
     
     @State private var scannedResult: String? // 扫码结果
-    //    @State private var timeout: Int = 30
     
     // 当网络恢复时的回调函数
     let onSaveUrl: () -> Void
@@ -62,97 +61,97 @@ struct UrlConfig: View {
     }
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                // 主表单
-                Form {
-                    Section("服务器地址") {
-                        HStack{
-                            TextField("请输入 URL", text: $serverUrl)
-                                .textInputAutocapitalization(.never)
-                                .keyboardType(.URL)
-                                .disableAutocorrection(true)
-                            
-                            // 扫码按钮（使用 SF Symbol 图标）
-                            Button(action: {
-                                // 这里处理扫码逻辑
-                                print("开始扫码...")
-                                startScanning()
-                            }) {
-                                Image(systemName: "qrcode.viewfinder")
-                                    .foregroundColor(.blue)
-                                    .font(.title2)
-                            }
-                            .buttonStyle(PlainButtonStyle()) // 去掉默认高亮
+        VStack {
+            // 顶部按钮
+            HStack{
+                Button("取消") {
+                    isPresented = false
+                }
+                .foregroundColor(.primary)
+                Spacer()
+                Text("URL 配置").fontWeight(.bold)
+                Spacer()
+                Button("保存") {
+                    onSave()
+                }
+                .fontWeight(.semibold)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 20)
+            .padding(.bottom, 10)
+            .background(Color.clear) // 透明背景
+            // 主表单
+            Form {
+                Section("服务器地址") {
+                    HStack{
+                        TextField("请输入 URL", text: $serverUrl)
+                            .textInputAutocapitalization(.never)
+                            .keyboardType(.URL)
+                            .disableAutocorrection(true)
+                        
+                        // 扫码按钮（使用 SF Symbol 图标）
+                        Button(action: {
+                            // 这里处理扫码逻辑
+                            print("开始扫码...")
+                            startScanning()
+                        }) {
+                            Image(systemName: "qrcode.viewfinder")
+                                .foregroundColor(.blue)
+                                .font(.title2)
                         }
-                    }
-                    
-                    Section("连接选项") {
-                        Toggle("使用 HTTPS", isOn: $useHttps)
-                            .onChange(of: useHttps) { oldValue, newValue in
-                                // iOS 17+ 语法（两个参数）
-                                changeUrlHeadByType(useHttps: newValue)
-                            }
-                        //                        Picker("超时时间 (秒)", selection: $timeout) {
-                        //                            ForEach([10, 20, 30, 60], id: \.self) { seconds in
-                        //                                Text("\(seconds) 秒").tag(seconds)
-                        //                            }
-                        //                        }
-                        //                        .pickerStyle(MenuPickerStyle()) // 弹出菜单样式（iOS 风格）
+                        .buttonStyle(PlainButtonStyle()) // 去掉默认高亮
                     }
                 }
-                .navigationTitle("URL 设置")
-                .fullScreenCover(isPresented: $isScanning) {
-                    CodeScannerView { result in
-                        scannedResult = result.stringValue
-                        // 计算属性：自动清理后的 URL
-                        var cleanedUrl: String {
-                            return scannedResult!.trimmingCharacters(in: .whitespacesAndNewlines)
+                
+                Section("连接选项") {
+                    Toggle("使用 HTTPS", isOn: $useHttps)
+                        .onChange(of: useHttps) { oldValue, newValue in
+                            // iOS 17+ 语法（两个参数）
+                            changeUrlHeadByType(useHttps: newValue)
                         }
-                        if(useHttps){
-                            if(!(cleanedUrl.contains("https://"))){
-                                serverUrl = "https://" + cleanedUrl
-                            }
-                            else{
-                                serverUrl = cleanedUrl
-                            }
+                    //                        Picker("超时时间 (秒)", selection: $timeout) {
+                    //                            ForEach([10, 20, 30, 60], id: \.self) { seconds in
+                    //                                Text("\(seconds) 秒").tag(seconds)
+                    //                            }
+                    //                        }
+                    //                        .pickerStyle(MenuPickerStyle()) // 弹出菜单样式（iOS 风格）
+                }
+            }
+            .fullScreenCover(isPresented: $isScanning) {
+                CodeScannerView { result in
+                    scannedResult = result.stringValue
+                    // 计算属性：自动清理后的 URL
+                    var cleanedUrl: String {
+                        return scannedResult!.trimmingCharacters(in: .whitespacesAndNewlines)
+                    }
+                    if(useHttps){
+                        if(!(cleanedUrl.contains("https://"))){
+                            serverUrl = "https://" + cleanedUrl
                         }
                         else{
-                            if(!(cleanedUrl.contains("http://"))){
-                                serverUrl = "http://" + cleanedUrl
-                            }
-                            else{
-                                serverUrl = cleanedUrl
-                            }
+                            serverUrl = cleanedUrl
                         }
-                        isScanning = false
-                    }.edgesIgnoringSafeArea(.all)
-                }
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button("取消") {
-                            isPresented = false
-                        }
-                        .foregroundColor(.primary)
                     }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("保存") {
-                            onSave()
+                    else{
+                        if(!(cleanedUrl.contains("http://"))){
+                            serverUrl = "http://" + cleanedUrl
                         }
-                        .fontWeight(.semibold)
+                        else{
+                            serverUrl = cleanedUrl
+                        }
                     }
-                }
+                    isScanning = false
+                }.edgesIgnoringSafeArea(.all)
             }
-            .alert("警告", isPresented: $showAlert) {
-                Button("重新输入", role: .cancel) { }
-            } message: {
-                Text("不正确的地址").padding()
-            }
+        }
+        .alert("警告", isPresented: $showAlert) {
+            Button("重新输入", role: .cancel) { }
+        } message: {
+            Text("不正确的地址").padding()
         }
     }
 }
 
 #Preview {
-    Preopen(goto: { route in
-    })
+    Preopen()
 }

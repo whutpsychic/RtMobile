@@ -1,7 +1,7 @@
 <template>
   <main class="main">
     <div class="top-section">
-      <p class="login-title">华东铜箔设备管理</p>
+      <p class="login-title">RtMobile</p>
     </div>
     <van-form class="form-can" @submit="onSubmit">
       <van-cell-group inset>

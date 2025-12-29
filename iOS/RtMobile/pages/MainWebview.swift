@@ -91,7 +91,7 @@ struct MainWebview: View {
                 scannedResult = result.stringValue
                 // 触发回调
                 if(scannedResult != nil){
-                    webViewManager.sendToJS(data: "\(scannedResult!)")
+                    webViewManager.evaluate("scan", data: "\(scannedResult!)")
                 }
                 isScanning = false
             }.edgesIgnoringSafeArea(.all)

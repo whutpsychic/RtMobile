@@ -28,12 +28,11 @@ class WebViewManager: ObservableObject {
     }
     
     // 发送数据到JavaScript
-    func sendToJS(data: String) {
+    func evaluate(_ fnName:String, data: String) {
+        let key: String = getfnNameByTag(fnName)
+        let script = "window.rtmobile.callbacks.\(key)('\(data)')"
         print(" ------- \(data) ------- ")
-//        guard let webView = webView else { return }
-        let script = "window.receiveFromSwift('\(data)')"
         print(" ------- \(script) ------- ")
-        print(webView as Any)
         webView?.evaluateJavaScript(script) { result, error in
             if let error = error {
                 print("发送到JS失败: \(error)")
@@ -48,9 +47,9 @@ class WebViewManager: ObservableObject {
     
     // 接收来自JavaScript的数据
     func receiveFromJS(data: String) {
+        print(" ----------- received data from js -----------")
+        print(data)
         DispatchQueue.main.async {
-            print(" ----------- received data from js -----------")
-            print(data)
             self.receivedDataFromJS = data
             if(data == "scan"){
                 // 调用回调函数来更新SwiftUI状态
@@ -102,7 +101,7 @@ struct MWebView: UIViewRepresentable {
         
         let webView = WKWebView(frame: .zero, configuration: configuration)
         context.coordinator.manager.webView = webView
-
+        
         webView.navigationDelegate = context.coordinator
         webView.addObserver(
             context.coordinator,

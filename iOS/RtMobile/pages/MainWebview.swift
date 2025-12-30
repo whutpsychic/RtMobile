@@ -11,6 +11,7 @@ struct MainWebview: View {
     @ObservedObject var webViewManager: WebViewManager
     @State private var isScanning: Bool = false // 正在扫码
     @State private var scannedResult: String? // 扫码结果
+    @StateObject private var cacheManager = LocalCacheManager.shared
     
     var body: some View {
         ZStack {
@@ -42,9 +43,79 @@ struct MainWebview: View {
         .onAppear {
             // 设置回调函数，让WebViewManager可以更新isScanning状态
             webViewManager.onJSCommand = { command in
-                if command == "scan" {
+                if(appConfig.developing){
+                    print(" ----------- received data from js -----------")
+                    print(command)
+                }
+                
+                let transData = command.split(separator: AppConfig.spliter)
+                let fnName = transData[0]
+                
+                // 混合扫码
+                if fnName == "scan" {
                     DispatchQueue.main.async {
                         self.isScanning = true
+                    }
+                }
+                // 获取设备信息
+                else if fnName == "getDeviceInfo"{
+                    DeviceInfo.printAll()
+                    let infoString = DeviceInfo.getAllInfo()
+                    webViewManager.evaluate("getDeviceInfo", data: "\(infoString)")
+                }
+                // 写入本地缓存
+                else if fnName == "writeLocal"{
+                    let key: String = String(transData[1])
+                    let value: String = String(transData[2])
+                    let seconds: NSNumber = stringToNSNumber(String(transData[3]))
+                    
+                    let timeInterval: TimeInterval = seconds.doubleValue
+                    cacheManager.set(value, forKey: key, expirationTime: timeInterval)
+                    
+                    webViewManager.evaluate("writeLocal", data: "true")
+                    if(appConfig.developing){
+                        print(" ------- 已成功写入缓存\(key)，值为\(value)，有效期为\(String(describing: seconds))秒 ------- ")
+                    }
+                }
+                // 读取本地缓存
+                else if fnName == "readLocal"{
+                    let key: String = String(transData[1])
+                    let value: String? = cacheManager.get(key)
+                    webViewManager.evaluate("readLocal", data: "\(value ?? "")")
+                    if(appConfig.developing){
+                        print(" ------- 已成功读取缓存\(key)，值为\(value ?? "") ------- ")
+                    }
+                }
+                // 电话拨号
+                else if fnName == "preDial"{
+                    let number: String = String(transData[1])
+                    // 打开电话应用
+                    UIApplication.shared.open(URL(string: "tel:\(number)")!)
+                }
+                // 检查网络连接状态
+                else if fnName == "checkoutNetwork"{
+                    let type: String = NetworkMonitor.shared.connectionType
+                    if(appConfig.developing){
+                        print(" ------- 当前网络连接类型为\(type) ------- ")
+                    }
+                    webViewManager.evaluate("checkoutNetwork", data: "\(type)")
+                }
+                // 切为横屏
+                else if fnName == "setScreenHorizontal"{
+                    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+                    // .portrait / .landscapeLeft / .landscapeRight / .portraitUpsideDown
+                    windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeRight))
+                    if(appConfig.developing){
+                        print(" ------- 已将屏幕切为横屏 ------- ")
+                    }
+                }
+                // 切为竖屏
+                else if fnName == "setScreenPortrait"{
+                    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+                    // .portrait / .landscapeLeft / .landscapeRight / .portraitUpsideDown
+                    windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: .portrait))
+                    if(appConfig.developing){
+                        print(" ------- 已将屏幕切为竖屏 ------- ")
                     }
                 }
             }

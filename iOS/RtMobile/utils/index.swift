@@ -30,8 +30,9 @@ public func isValidURL(_ urlString: String) -> Bool {
     return true
 }
 
-// 自制的调试打印
-public func dprint(_ label: String, _ v: Any...){
-    print(" ----------- " + label + " ----------- ")
-    print(v)
+// 【检查一个url是否是合法url】
+func stringToNSNumber(_ string: String) -> NSNumber {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .decimal
+    return formatter.number(from: string)!
 }

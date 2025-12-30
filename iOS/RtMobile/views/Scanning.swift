@@ -103,7 +103,8 @@ class ScannerViewController: UIViewController {
                 .pdf417,
                 .ean13,
                 .ean8,
-                .upce
+                .upce,
+                .dataMatrix
             ]
         } else {
             return

@@ -1,3 +1,5 @@
+export const fnSpliter = '|rtm|'
+
 /**
  * 判断当前设备是否为 iOS
  */

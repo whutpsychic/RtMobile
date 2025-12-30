@@ -31,8 +31,6 @@ class WebViewManager: ObservableObject {
     func evaluate(_ fnName:String, data: String) {
         let key: String = getfnNameByTag(fnName)
         let script = "window.rtmobile.callbacks.\(key)('\(data)')"
-        print(" ------- \(data) ------- ")
-        print(" ------- \(script) ------- ")
         webView?.evaluateJavaScript(script) { result, error in
             if let error = error {
                 print("发送到JS失败: \(error)")
@@ -47,14 +45,9 @@ class WebViewManager: ObservableObject {
     
     // 接收来自JavaScript的数据
     func receiveFromJS(data: String) {
-        print(" ----------- received data from js -----------")
-        print(data)
         DispatchQueue.main.async {
-            self.receivedDataFromJS = data
-            if(data == "scan"){
-                // 调用回调函数来更新SwiftUI状态
-                self.onJSCommand?("scan")
-            }
+            self.receivedDataFromJS = data // 记录接收的信息
+            self.onJSCommand?(data) // 执行方法
         }
     }
     

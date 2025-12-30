@@ -29,7 +29,7 @@ class NetworkMonitor: ObservableObject {
         
         switch path.availableInterfaces.first?.type {
         case .wifi:
-            type = "Wi-Fi"
+            type = "Wifi"
         case .cellular:
             type = "Cellular"
         case .wiredEthernet:

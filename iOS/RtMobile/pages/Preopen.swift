@@ -24,8 +24,6 @@ struct Preopen: View {
         let isConnected = networkMonitor.isConnected
         // 已经联网
         if(isConnected){
-            // 尝试读取本地地址
-            dprint("url", localUrl as Any)
             // 如果有地址
             if let urlStr = localUrl, !urlStr.isEmpty {
                 // 继续倒计时

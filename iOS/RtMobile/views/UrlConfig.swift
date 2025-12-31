@@ -3,14 +3,18 @@ import SwiftUI
 
 struct UrlConfig: View {
     @Binding var isPresented: Bool // 用于返回（可选）
+    @AppStorage("serverRemark") var serverRemark: String = ""
     @AppStorage("localUrl") var serverUrl: String = "https://"
     
     @State private var isScanning: Bool = false // 正在扫码
+    @State private var viewingHistory: Bool = false // 正在浏览历史记录
     @State private var showAlert: Bool = false // 显示错误提示
     // 表单数据
     @State private var useHttps = true
     
     @State private var scannedResult: String? // 扫码结果
+    
+    @StateObject private var historyManager = HistoryManager()
     
     // 当网络恢复时的回调函数
     let onSaveUrl: () -> Void
@@ -50,7 +54,10 @@ struct UrlConfig: View {
             // 收起面板
             isPresented = false
             // 保存到本地
+            UserDefaults.standard.set(serverRemark, forKey: "serverRemark")
             UserDefaults.standard.set(serverUrl, forKey: "localUrl")
+            // 保存到历史
+            historyManager.addHistory(url: serverUrl, title: serverRemark)
             onSaveUrl() // 回调
         }
         // 非法地址
@@ -83,6 +90,10 @@ struct UrlConfig: View {
             // 主表单
             Form {
                 Section("服务器地址") {
+                    TextField("请输入服务器备注", text: $serverRemark)
+                        .textInputAutocapitalization(.never)
+                        .keyboardType(.URL)
+                        .disableAutocorrection(true)
                     HStack{
                         TextField("请输入 URL", text: $serverUrl)
                             .textInputAutocapitalization(.never)
@@ -116,6 +127,25 @@ struct UrlConfig: View {
                     //                        }
                     //                        .pickerStyle(MenuPickerStyle()) // 弹出菜单样式（iOS 风格）
                 }
+                
+                Section(header: Text("其他")) {
+                    Button(action: {
+                        viewingHistory = true
+                    })
+                    {
+                        HStack {
+                            Text("历史记录")
+                                .foregroundColor(.black)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .resizable() // 使图片可调整大小
+                                .aspectRatio(contentMode: .fit) // 保持原始宽高比
+                                .frame(width: 14, height: 14) // 设置你想要的宽度和高度
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                    }
+                }
             }
             .fullScreenCover(isPresented: $isScanning) {
                 CodeScannerView { result in
@@ -142,6 +172,19 @@ struct UrlConfig: View {
                     }
                     isScanning = false
                 }.edgesIgnoringSafeArea(.all)
+            }
+            .fullScreenCover(isPresented: $viewingHistory) {
+                HistoryListView.init(
+                    cancel: {
+                        viewingHistory = false
+                    },
+                    onConfirm: {title , url in
+                        viewingHistory = false
+                        // 保存到本地
+                        serverRemark = title
+                        serverUrl = url
+                    })
+                .environmentObject(historyManager)
             }
         }
         .alert("警告", isPresented: $showAlert) {

@@ -24,7 +24,7 @@ class Router: ObservableObject {
     }
 }
 
-// App 结构
+// App 入口
 @main
 struct MyApp: App {
     @StateObject private var router = Router() // 路由管理

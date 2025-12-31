@@ -63,6 +63,11 @@ class HistoryManager: ObservableObject {
         saveHistory()
     }
     
+    // 检查是否存在指定URL的历史记录，如果存在返回索引，否则返回nil
+    func indexOfHistory(withURL url: String) -> Int? {
+        return history.firstIndex { $0.url == url }
+    }
+    
     // 删除特定历史记录
     func removeHistory(at index: Int) {
         if index >= 0 && index < history.count {

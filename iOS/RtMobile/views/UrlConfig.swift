@@ -56,6 +56,10 @@ struct UrlConfig: View {
             // 保存到本地
             UserDefaults.standard.set(serverRemark, forKey: "serverRemark")
             UserDefaults.standard.set(serverUrl, forKey: "localUrl")
+            let index: Int? = historyManager.indexOfHistory(withURL: serverUrl)
+            if(index != nil){
+                historyManager.removeHistory(at: index!)
+            }
             // 保存到历史
             historyManager.addHistory(url: serverUrl, title: serverRemark)
             onSaveUrl() // 回调

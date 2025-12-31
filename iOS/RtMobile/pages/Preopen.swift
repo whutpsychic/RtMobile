@@ -6,7 +6,7 @@ import Combine
 struct Preopen: View {
     @EnvironmentObject var router: Router // 路由
     @EnvironmentObject var appConfig: AppConfig // app设置
-
+    
     @AppStorage("localUrl") var localUrl: String?
     @ObservedObject private var networkMonitor = NetworkMonitor.shared
     @State private var alreadyDone = false // 防重复触发
@@ -50,7 +50,8 @@ struct Preopen: View {
         VStack {
             Spacer()
             Image("logo_transp")
-                .resizable()
+                .resizable()          // 允许图片缩放
+                .scaledToFit()        // 按比例缩放以适应可用空间（保持宽高比）
                 .frame(width: 120, height: 120)
                 .aspectRatio(contentMode: .fit)
                 .onTapGesture {
@@ -60,6 +61,8 @@ struct Preopen: View {
                         showUrlPage = true
                     }
                 }
+            Text("欢迎使用").font(.system(size: 24)).fontWeight(.bold)
+                .tracking(3)
             Spacer()
         }.sheet(isPresented: $showUrlPage) {
             UrlConfig(isPresented: $showUrlPage, onSaveUrl: {

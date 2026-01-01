@@ -4,7 +4,7 @@ import SwiftUI
 struct UrlConfig: View {
     @Binding var isPresented: Bool // 用于返回（可选）
     @AppStorage("serverRemark") var serverRemark: String = ""
-    @AppStorage("localUrl") var serverUrl: String = "https://"
+    @AppStorage("localUrl") var localUrl: String = "https://"
     
     @State private var isScanning: Bool = false // 正在扫码
     @State private var viewingHistory: Bool = false // 正在浏览历史记录
@@ -22,20 +22,20 @@ struct UrlConfig: View {
     // 将头部http模式换掉
     private func changeUrlHeadByType(useHttps:Bool){
         if(useHttps){
-            if serverUrl.hasPrefix("http://") {
-                let result = serverUrl.replacingOccurrences(of: "http://", with: "https://")
-                serverUrl = result
+            if localUrl.hasPrefix("http://") {
+                let result = localUrl.replacingOccurrences(of: "http://", with: "https://")
+                localUrl = result
             }
-            if(!serverUrl.contains("https://")){
-                serverUrl = "https://" + serverUrl
+            if(!localUrl.contains("https://")){
+                localUrl = "https://" + localUrl
             }
         }else{
-            if serverUrl.hasPrefix("https://") {
-                let result = serverUrl.replacingOccurrences(of: "https://", with: "http://")
-                serverUrl = result
+            if localUrl.hasPrefix("https://") {
+                let result = localUrl.replacingOccurrences(of: "https://", with: "http://")
+                localUrl = result
             }
-            if(!serverUrl.contains("http://")){
-                serverUrl = "http://" + serverUrl
+            if(!localUrl.contains("http://")){
+                localUrl = "http://" + localUrl
             }
         }
     }
@@ -48,20 +48,20 @@ struct UrlConfig: View {
     // 点击保存
     private func onSave(){
         // 这里可以保存到 UserDefaults 或 AppSettings
-        print("保存 URL: \(serverUrl)")
+        print("保存 URL: \(localUrl)")
         // 合法地址
-        if(isValidURL(serverUrl)){
+        if(isValidURL(localUrl)){
             // 收起面板
             isPresented = false
             // 保存到本地
             UserDefaults.standard.set(serverRemark, forKey: "serverRemark")
-            UserDefaults.standard.set(serverUrl, forKey: "localUrl")
-            let index: Int? = historyManager.indexOfHistory(withURL: serverUrl)
+            UserDefaults.standard.set(localUrl, forKey: "localUrl")
+            let index: Int? = historyManager.indexOfHistory(withURL: localUrl)
             if(index != nil){
                 historyManager.removeHistory(at: index!)
             }
             // 保存到历史
-            historyManager.addHistory(url: serverUrl, title: serverRemark)
+            historyManager.addHistory(url: localUrl, title: serverRemark)
             onSaveUrl() // 回调
         }
         // 非法地址
@@ -99,7 +99,7 @@ struct UrlConfig: View {
                         .keyboardType(.URL)
                         .disableAutocorrection(true)
                     HStack{
-                        TextField("请输入 URL", text: $serverUrl)
+                        TextField("请输入 URL", text: $localUrl)
                             .textInputAutocapitalization(.never)
                             .keyboardType(.URL)
                             .disableAutocorrection(true)
@@ -160,18 +160,18 @@ struct UrlConfig: View {
                     }
                     if(useHttps){
                         if(!(cleanedUrl.contains("https://"))){
-                            serverUrl = "https://" + cleanedUrl
+                            localUrl = "https://" + cleanedUrl
                         }
                         else{
-                            serverUrl = cleanedUrl
+                            localUrl = cleanedUrl
                         }
                     }
                     else{
                         if(!(cleanedUrl.contains("http://"))){
-                            serverUrl = "http://" + cleanedUrl
+                            localUrl = "http://" + cleanedUrl
                         }
                         else{
-                            serverUrl = cleanedUrl
+                            localUrl = cleanedUrl
                         }
                     }
                     isScanning = false
@@ -186,7 +186,7 @@ struct UrlConfig: View {
                         viewingHistory = false
                         // 保存到本地
                         serverRemark = title
-                        serverUrl = url
+                        localUrl = url
                     })
                 .environmentObject(historyManager)
             }

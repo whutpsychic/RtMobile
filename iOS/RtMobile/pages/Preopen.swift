@@ -61,9 +61,8 @@ struct Preopen: View {
                         showUrlPage = true
                     }
                 }
-            Text("欢迎使用").font(.system(size: 24)).fontWeight(.bold)
-                .tracking(3)
             Spacer()
+            Text("http://www.rtlink.com.cn").font(.system(size: 15)).foregroundColor(.black)
         }.sheet(isPresented: $showUrlPage) {
             UrlConfig(isPresented: $showUrlPage, onSaveUrl: {
                 // 保存地址后，不再计时，直接跳转过去

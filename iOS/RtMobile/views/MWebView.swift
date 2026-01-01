@@ -18,6 +18,7 @@ class WebViewManager: ObservableObject {
     @Published var showCertificateAlert: Bool = false // 显示不信任的证书提示
     @Published var certificateChallengeInfo: CertificateChallengeInfo?
     @Published var trustedHosts: Set<String> = [] // 信任的地址
+    @Published var showLoadErrorAlert: Bool = false // 显示加载错误提示
     
     @Published var receivedDataFromJS: String = "" // 接收到的来自js的数据
     weak var webView: WKWebView?
@@ -25,6 +26,7 @@ class WebViewManager: ObservableObject {
     init() {
         // 从存储加载已信任的服务器地址
         loadTrustedHostsFromStorage()
+        showLoadErrorAlert = true
     }
     
     // 发送数据到JavaScript
@@ -78,6 +80,7 @@ class WebViewManager: ObservableObject {
             self.errorMessage = ""
             self.showCertificateAlert = false
             self.certificateChallengeInfo = nil
+            self.showLoadErrorAlert = false
         }
     }
 }
@@ -169,6 +172,7 @@ struct MWebView: UIViewRepresentable {
                 self.manager.canGoForward = webView.canGoForward
                 self.manager.isLoading = false
                 self.manager.errorMessage = ""
+                self.manager.showLoadErrorAlert = false // 清除错误提示
             }
         }
         
@@ -177,12 +181,44 @@ struct MWebView: UIViewRepresentable {
                 self.manager.canGoBack = webView.canGoBack
                 self.manager.canGoForward = webView.canGoForward
                 self.manager.isLoading = false
-                if let nsError = error as NSError?,
-                   nsError.code == NSURLErrorServerCertificateUntrusted ||
-                    nsError.code == NSURLErrorSecureConnectionFailed {
-                    self.manager.errorMessage = "SSL证书不受信任，无法连接到服务器"
-                } else {
-                    self.manager.errorMessage = "网页加载失败: \(error.localizedDescription)"
+                if let nsError = error as NSError? {
+                    if nsError.code == NSURLErrorTimedOut {
+                        // 明确处理超时错误
+                        self.manager.errorMessage = "页面加载超时"
+                        self.manager.showLoadErrorAlert = true
+                    } else if nsError.code == NSURLErrorServerCertificateUntrusted ||
+                                nsError.code == NSURLErrorSecureConnectionFailed {
+                        self.manager.errorMessage = "SSL证书不受信任，无法连接到服务器"
+                    } else {
+                        self.manager.errorMessage = "页面加载失败: \(error.localizedDescription)"
+                        // 显示加载错误提示
+                        self.manager.showLoadErrorAlert = true
+                    }
+                }
+            }
+        }
+        
+        // 处理初步导航失败（包括超时）
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            DispatchQueue.main.async {
+                self.manager.canGoBack = webView.canGoBack
+                self.manager.canGoForward = webView.canGoForward
+                self.manager.isLoading = false
+                if let nsError = error as NSError? {
+                    if nsError.code == NSURLErrorTimedOut {
+                        // 处理超时错误
+                        self.manager.errorMessage = "页面加载超时"
+                        self.manager.showLoadErrorAlert = true
+                        print("页面加载超时: \(error.localizedDescription)")
+                    } else if nsError.code == NSURLErrorServerCertificateUntrusted ||
+                                nsError.code == NSURLErrorSecureConnectionFailed {
+                        self.manager.errorMessage = "SSL证书不受信任，无法连接到服务器"
+                    } else {
+                        self.manager.errorMessage = "页面加载失败: \(error.localizedDescription)"
+                        // 显示加载错误提示
+                        self.manager.showLoadErrorAlert = true
+                        print("显示加载错误提示: \(error.localizedDescription)")
+                    }
                 }
             }
         }

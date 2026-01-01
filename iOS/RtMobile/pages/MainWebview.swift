@@ -8,10 +8,25 @@ struct MainWebview: View {
     @EnvironmentObject var appConfig: AppConfig // app设置
     
     @AppStorage("localUrl") var localUrl: String?
+    @AppStorage("serverRemark") var serverRemark: String?
     @ObservedObject var webViewManager: WebViewManager
     @State private var isScanning: Bool = false // 正在扫码
     @State private var scannedResult: String? // 扫码结果
     @StateObject private var cacheManager = LocalCacheManager.shared
+    
+    // 返回
+    private func goBack(){
+        webViewManager.showCertificateAlert = false
+        webViewManager.showLoadErrorAlert = false
+        router.goBack()
+    }
+    
+    // 返回并重新配置
+    private func goBackAndConfig(){
+        localUrl = nil
+        serverRemark = nil
+        goBack()
+    }
     
     var body: some View {
         ZStack {
@@ -22,7 +37,6 @@ struct MainWebview: View {
                 VStack {
                     ProgressView(value: webViewManager.progress, total: 1.0)
                         .progressViewStyle(LinearProgressViewStyle())
-                        .padding(.top, 2) // 添加顶部间距
                         .frame(maxWidth: .infinity) // 确保宽度占满
                     Spacer() // 占据剩余空间
                     // 转圈圈加载动画
@@ -120,6 +134,35 @@ struct MainWebview: View {
                 }
             }
         }
+        .fullScreenCover(isPresented: $webViewManager.showLoadErrorAlert){
+            VStack {
+                Image(systemName: "exclamationmark.triangle")
+                    .font(.system(size: 50))
+                    .foregroundColor(.red)
+                
+                Text("加载失败")
+                    .font(.title)
+                    .padding(.top, 10)
+                
+                Text(webViewManager.errorMessage)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+                
+                Button("重试") {
+                    goBack()
+                }
+                .padding(.top, 20)
+                
+                Button("配置地址") {
+                    goBackAndConfig()
+                }
+                .padding(.top, 10)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color(.systemBackground))
+        }
         .fullScreenCover(isPresented: $webViewManager.showCertificateAlert) {
             Spacer()
             Text("该地址使用的是未受信任的机构颁发的证书或自签名证书，您确认要信任该服务器地址吗？")
@@ -147,10 +190,7 @@ struct MainWebview: View {
                 }
                 Text("或者")
                 Button("返回") {
-                    // 清除之前的url并返回重新输入
-                    localUrl = nil
-                    webViewManager.showCertificateAlert = false
-                    router.goBack()
+                    goBackAndConfig()
                 }
                 Spacer()
             }

@@ -26,7 +26,6 @@ class WebViewManager: ObservableObject {
     init() {
         // 从存储加载已信任的服务器地址
         loadTrustedHostsFromStorage()
-        showLoadErrorAlert = true
     }
     
     // 发送数据到JavaScript

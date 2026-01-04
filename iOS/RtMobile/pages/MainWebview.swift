@@ -14,6 +14,13 @@ struct MainWebview: View {
     @State private var scannedResult: String? // 扫码结果
     @StateObject private var cacheManager = LocalCacheManager.shared
     
+    @State private var firstLoad = true // 首次加载
+    
+    // 计算属性：两个条件同时为 true 时才显示
+    private var shouldShowErrorCover: Bool {
+        webViewManager.showLoadErrorAlert && firstLoad
+    }
+    
     // 返回
     private func goBack(){
         webViewManager.showCertificateAlert = false
@@ -33,7 +40,7 @@ struct MainWebview: View {
             // MWebView 组件
             MWebView(url: localUrl, manager: webViewManager)
             // 进度条 - 居于屏幕顶端并添加margin-top
-            if webViewManager.isLoading {
+            if webViewManager.isLoading && firstLoad{
                 VStack {
                     ProgressView(value: webViewManager.progress, total: 1.0)
                         .progressViewStyle(LinearProgressViewStyle())
@@ -55,6 +62,7 @@ struct MainWebview: View {
             }
         }
         .onAppear {
+            firstLoad = false
             // 设置回调函数，让WebViewManager可以更新isScanning状态
             webViewManager.onJSCommand = { command in
                 if(appConfig.developing){
@@ -134,7 +142,7 @@ struct MainWebview: View {
                 }
             }
         }
-        .fullScreenCover(isPresented: $webViewManager.showLoadErrorAlert){
+        .fullScreenCover(isPresented: .constant(shouldShowErrorCover)){
             VStack {
                 Image(systemName: "exclamationmark.triangle")
                     .font(.system(size: 50))

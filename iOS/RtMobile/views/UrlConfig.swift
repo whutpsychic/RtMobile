@@ -2,7 +2,6 @@
 import SwiftUI
 
 struct UrlConfig: View {
-    @Binding var isPresented: Bool // 用于返回（可选）
     @AppStorage("serverRemark") var serverRemark: String = ""
     @AppStorage("localUrl") var localUrl: String = "https://"
     
@@ -11,13 +10,19 @@ struct UrlConfig: View {
     @State private var showAlert: Bool = false // 显示错误提示
     // 表单数据
     @State private var useHttps = true
-    
     @State private var scannedResult: String? // 扫码结果
     
     @StateObject private var historyManager = HistoryManager()
     
-    // 当网络恢复时的回调函数
-    let onSaveUrl: () -> Void
+    var isPresented: Bool // 是否显示（用于返回）
+    let onSaveUrl: () -> Void // 当网络恢复时的回调函数
+    let onCancel: () -> Void // 当点击取消时的回调函数
+    
+    init(isPresented: Bool, onSaveUrl: @escaping () -> Void, onCancel: @escaping () -> Void){
+        self.isPresented = isPresented
+        self.onSaveUrl = onSaveUrl
+        self.onCancel = onCancel
+    }
     
     // 将头部http模式换掉
     private func changeUrlHeadByType(useHttps:Bool){
@@ -51,8 +56,6 @@ struct UrlConfig: View {
         print("保存 URL: \(localUrl)")
         // 合法地址
         if(isValidURL(localUrl)){
-            // 收起面板
-            isPresented = false
             // 保存到本地
             UserDefaults.standard.set(serverRemark, forKey: "serverRemark")
             UserDefaults.standard.set(localUrl, forKey: "localUrl")
@@ -76,7 +79,7 @@ struct UrlConfig: View {
             // 顶部按钮
             HStack{
                 Button("取消") {
-                    isPresented = false
+                    onCancel()
                 }
                 .foregroundColor(.primary)
                 Spacer()

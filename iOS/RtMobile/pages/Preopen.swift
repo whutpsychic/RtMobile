@@ -16,6 +16,8 @@ struct Preopen: View {
     @State private var isCancelled = false // 是否暂停跳转
     @State private var isActive = true // 控制是否还在倒计时
     
+    @State private var progress: Double = 0.0
+    
     private func onMounted(){
         if(appConfig.developing){
             print(" ---- app正处于开发模式 ---- ")
@@ -24,6 +26,15 @@ struct Preopen: View {
         let isConnected = networkMonitor.isConnected
         // 已经联网
         if(isConnected){
+            Task {
+                // 模拟逐步加载
+                for i in 0...100 {
+                    await MainActor.run {
+                        progress = Double(i) / 100.0
+                    }
+                    try? await Task.sleep(nanoseconds: 15_000_000) // 10ms
+                }
+            }
             // 如果有地址
             if let urlStr = localUrl, !urlStr.isEmpty {
                 // 继续倒计时
@@ -49,24 +60,37 @@ struct Preopen: View {
     var body: some View {
         VStack {
             Spacer()
-            Image("logo_transp")
-                .resizable()          // 允许图片缩放
-                .scaledToFit()        // 按比例缩放以适应可用空间（保持宽高比）
-                .frame(width: 120, height: 120)
-                .aspectRatio(contentMode: .fit)
-                .onTapGesture {
-                    isCancelled = true
-                    isActive = false
-                    withAnimation {
-                        showUrlPage = true
+            ZStack{
+                CircularProgressView(progress: progress)
+                Image("logo_transp")
+                    .resizable()          // 允许图片缩放
+                    .scaledToFit()        // 按比例缩放以适应可用空间（保持宽高比）
+                    .frame(width: 120, height: 120)
+                    .aspectRatio(contentMode: .fit)
+                    .onTapGesture {
+                        isCancelled = true
+                        isActive = false
+                        withAnimation {
+                            showUrlPage = true
+                        }
                     }
-                }
+            }
+            Text("Click logo image for new url")
+                .padding(.vertical, 5)
             Spacer()
             Text("http://www.rtlink.com.cn").font(.system(size: 15)).foregroundColor(.black)
         }.sheet(isPresented: $showUrlPage) {
-            UrlConfig(isPresented: $showUrlPage, onSaveUrl: {
+            UrlConfig(isPresented: showUrlPage,
+                      onSaveUrl:{
+                showUrlPage = false
                 // 保存地址后，不再计时，直接跳转过去
                 router.navigate(to: "webview")
+            },
+                      onCancel: {
+                showUrlPage = false
+                // 恢复计时
+                isActive = true
+                isCancelled = false
             })
         }
         .onAppear{

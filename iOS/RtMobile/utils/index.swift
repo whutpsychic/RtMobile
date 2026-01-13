@@ -1,13 +1,5 @@
 import Foundation
 
-// 【判断网络连接状态】
-// - 4g/5g 返回 4g/5g
-// - wifi 返回 wifi
-// - none 返回 none
-public func checkoutNetwork(){
-    
-}
-
 // 【检查一个url是否是合法url】
 public func isValidURL(_ urlString: String) -> Bool {
     // 1. 先尝试创建 URL 对象
@@ -35,4 +27,28 @@ func stringToNSNumber(_ string: String) -> NSNumber {
     let formatter = NumberFormatter()
     formatter.numberStyle = .decimal
     return formatter.number(from: string)!
+}
+
+//【获取当前年份】
+func getCurrentYear() -> Int {
+    let calendar = Calendar.current
+    let currentDate = Date()
+    let year = calendar.component(.year, from: currentDate)
+    return year
+}
+
+//【获取当前月份】
+func getCurrentMonth() -> Int {
+    let calendar = Calendar.current
+    let currentDate = Date()
+    let month = calendar.component(.month, from: currentDate)
+    return month
+}
+
+//【获取当前日期】
+func getCurrentDate() -> Int {
+    let calendar = Calendar.current
+    let currentDate = Date()
+    let date = calendar.component(.day, from: currentDate)
+    return date
 }

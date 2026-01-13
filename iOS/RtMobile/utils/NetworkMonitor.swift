@@ -1,4 +1,5 @@
 // NetworkMonitor.swift
+// 网络连接状态监听器
 import Network
 import Combine
 import SwiftUI

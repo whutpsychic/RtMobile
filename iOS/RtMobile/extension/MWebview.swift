@@ -21,6 +21,12 @@ class WebViewManager: ObservableObject {
     @Published var showLoadErrorAlert: Bool = false // 显示加载错误提示
     
     @Published var receivedDataFromJS: String = "" // 接收到的来自js的数据
+    
+    // 滑动状态
+    @Published var isScrolling: Bool = false // 是否正在滑动
+    @Published var hasScrolled: Bool = false // 是否发生过滑动
+    @Published var lastScrollTime: Date = Date() // 最后滑动时间
+    
     weak var webView: WKWebView?
     
     init() {
@@ -49,6 +55,15 @@ class WebViewManager: ObservableObject {
         DispatchQueue.main.async {
             self.receivedDataFromJS = data // 记录接收的信息
             self.onJSCommand?(data) // 执行方法
+        }
+    }
+    
+    // 滑动事件处理
+    func handleScrollEvent() {
+        DispatchQueue.main.async {
+            self.hasScrolled = true
+            self.isScrolling = true
+            self.lastScrollTime = Date()
         }
     }
     
@@ -82,12 +97,66 @@ class WebViewManager: ObservableObject {
             self.showLoadErrorAlert = false
         }
     }
+    
+    // 后退
+    func goBack(){
+        webView?.goBack()
+    }
+    
+    // 前进
+    func goForward(){
+        webView?.goForward()
+    }
+    
+    // 刷新
+    func refresh(){
+        webView?.reload()
+    }
+    
+    // 获取当前网页的标题（通过 JavaScript）
+    func getCurrentWebTitle(completion: @escaping (String?) -> Void) {
+        guard let webView = webView else {
+            completion(nil)
+            return
+        }
+        
+        webView.evaluateJavaScript("document.title") { result, error in
+            DispatchQueue.main.async {
+                if let error = error {
+                    print("获取网页标题失败: \(error)")
+                    completion(nil)
+                } else if let title = result as? String {
+                    completion(title.isEmpty ? nil : title)
+                } else {
+                    completion(nil)
+                }
+            }
+        }
+    }
+}
+
+// 滑动手势协调器
+class ScrollGestureRecognizerDelegate: NSObject, UIGestureRecognizerDelegate {
+    weak var manager: WebViewManager?
+    
+    init(manager: WebViewManager) {
+        self.manager = manager
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldBeRequiredToFailBy otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return false
+    }
 }
 
 // MWebView 组件
 struct MWebView: UIViewRepresentable {
     let url: String?
     @ObservedObject var manager: WebViewManager
+    let onLoadSuccess: (() -> Void)? // 加载完成后回调
     
     func makeUIView(context: Context) -> WKWebView {
         // 配置WKWebView
@@ -108,9 +177,17 @@ struct MWebView: UIViewRepresentable {
         // 启用侧滑手势
         webView.allowsBackForwardNavigationGestures = true
         
+        // 添加滑动手势识别器
+        let panGesture = UIPanGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handlePanGesture(_:)))
+        panGesture.delegate = context.coordinator.panGestureRecognizerDelegate
+        webView.scrollView.addGestureRecognizer(panGesture)
+        
+        // 设置滚动代理来检测滑动
+        context.coordinator.scrollViewDelegate = ScrollViewDelegate(manager: manager)
+        webView.scrollView.delegate = context.coordinator.scrollViewDelegate
+        
         // 只在创建时加载一次 URL
         if let urlString = url, let url = URL(string: urlString) {
-            print("📱 WebView 创建，加载: \(urlString)")
             webView.load(URLRequest(url: url))
         }
         
@@ -122,18 +199,68 @@ struct MWebView: UIViewRepresentable {
     }
     
     func makeCoordinator() -> Coordinator {
-        Coordinator(manager: manager)
+        Coordinator(manager: manager, onLoadSuccess: onLoadSuccess)
     }
     
     func dismantleUIView(_ uiView: WKWebView, coordinator: Coordinator) {
         uiView.removeObserver(coordinator, forKeyPath: #keyPath(WKWebView.estimatedProgress))
     }
     
-    class Coordinator: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
-        @ObservedObject var manager: WebViewManager
+    class ScrollViewDelegate: NSObject, UIScrollViewDelegate {
+        weak var manager: WebViewManager?
         
         init(manager: WebViewManager) {
             self.manager = manager
+        }
+        
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            // 检测到滑动事件
+            manager?.handleScrollEvent()
+        }
+        
+        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+            // 开始拖拽时触发
+            manager?.handleScrollEvent()
+        }
+        
+        func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+            // 减速结束时触发
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                if let manager = self.manager {
+                    manager.isScrolling = false
+                }
+            }
+        }
+        
+        func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+            // 拖拽结束时触发
+            if !decelerate {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    if let manager = self.manager {
+                        manager.isScrolling = false
+                    }
+                }
+            }
+        }
+    }
+    
+    class Coordinator: NSObject, WKScriptMessageHandler, WKNavigationDelegate {
+        @ObservedObject var manager: WebViewManager
+        var panGestureRecognizerDelegate: ScrollGestureRecognizerDelegate
+        var scrollViewDelegate: ScrollViewDelegate?
+        let onLoadSuccess: (() -> Void)? // 加载成功回调
+        
+        init(manager: WebViewManager, onLoadSuccess: (() -> Void)?) {
+            self.manager = manager
+            self.panGestureRecognizerDelegate = ScrollGestureRecognizerDelegate(manager: manager)
+            self.onLoadSuccess = onLoadSuccess
+        }
+        
+        @objc func handlePanGesture(_ gesture: UIPanGestureRecognizer) {
+            if gesture.state == .began || gesture.state == .changed {
+                // 手势开始或变化时，表示用户正在滑动
+                manager.handleScrollEvent()
+            }
         }
         
         // 接收JavaScript消息
@@ -172,6 +299,10 @@ struct MWebView: UIViewRepresentable {
                 self.manager.isLoading = false
                 self.manager.errorMessage = ""
                 self.manager.showLoadErrorAlert = false // 清除错误提示
+                
+                if(self.onLoadSuccess != nil){
+                    self.onLoadSuccess!()
+                }
             }
         }
         
@@ -269,3 +400,5 @@ struct MWebView: UIViewRepresentable {
         }
     }
 }
+
+

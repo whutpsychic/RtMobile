@@ -1,14 +1,6 @@
 import SwiftUI
 import Combine
 
-// 定义历史记录项的结构
-struct HistoryItem: Codable, Identifiable {
-    var id = UUID()
-    let url: String
-    let title: String
-    var timestamp: Date
-}
-
 // 历史记录管理器
 class HistoryManager: ObservableObject {
     private let historyKey = "BrowserHistory"
@@ -134,79 +126,5 @@ struct HistoryRowView: View {
         formatter.dateStyle = .short
         formatter.timeStyle = .short
         return formatter.string(from: date)
-    }
-}
-
-struct HistoryListView: View {
-    @EnvironmentObject var historyManager: HistoryManager // 路由
-    
-    @State private var showingAlert = false
-    @State private var alertMessage = ""
-    let cancel: () -> Void
-    let onConfirm: (_ title: String, _ url: String) -> Void
-    
-    var body: some View {
-        NavigationView {
-            VStack {
-                if historyManager.history.isEmpty {
-                    VStack(spacing: 20) {
-                        Image(systemName: "clock.arrow.circlepath")
-                            .font(.system(size: 60))
-                            .foregroundColor(.gray)
-                        Text("暂无历史记录")
-                            .font(.headline)
-                            .foregroundColor(.gray)
-                        Text("访问网页后历史记录将显示在此处")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    List {
-                        ForEach(Array(historyManager.history.enumerated()), id: \.element.id) { index, item in
-                            HistoryRowView(item: item){
-                                print(item.title)
-                                print(item.url)
-                                onConfirm(item.title, item.url)
-                            }
-                        }
-                    }
-                }
-            }
-            .navigationTitle("历史记录")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("返回") {
-                        cancel()
-                    }
-                    .foregroundColor(.blue)
-                }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("清除") {
-                        showingAlert = true
-                    }
-                    .foregroundColor(.red)
-                }
-            }
-            .alert("确认清除", isPresented: $showingAlert) {
-                Button("取消", role: .cancel) { }
-                Button("清除", role: .destructive) {
-                    historyManager.clearAllHistory()
-                }
-            } message: {
-                Text("确定要清除所有历史记录吗？此操作无法撤销。")
-            }
-            
-            // 示例：添加一些测试数据
-            .onAppear {
-                //                if historyManager.history.isEmpty {
-                //                    historyManager.addHistory(url: "https://www.apple.com", title: "Apple")
-                //                    historyManager.addHistory(url: "https://www.swift.org", title: "Swift Programming Language")
-                //                    historyManager.addHistory(url: "https://developer.apple.com", title: "Apple Developer")
-                //                }
-            }
-        }
     }
 }

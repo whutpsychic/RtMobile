@@ -1,357 +1,131 @@
 package com.rtlink.rtmobile.activities
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            ImageNavigationTheme {
-                NavigationWithImages()
-            }
-        }
-    }
-}
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import com.rtlink.rtmobile.R
+import com.rtlink.rtmobile.offlineMode
+import com.rtlink.rtmobile.ui.RtmobileTheme
+import kotlinx.coroutines.delay
 
 @Composable
-fun NavigationWithImages() {
-    val navController = rememberNavController()
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+fun PreOpenScreen() {
+    val context = LocalContext.current
+    val sharedPref = context.getSharedPreferences("RtmobilePrefs", Context.MODE_PRIVATE)
 
-    Scaffold(
-        topBar = {
-            TopAppBarWithBackButton(
-                currentRoute = currentRoute,
-                onBackClick = { navController.popBackStack() },
-                navigateToHome = { navController.navigate("home") { popUpTo("home") { inclusive = true } } }
-            )
+    val window = (context as? Activity)?.window
+    val insetsController = window?.let { remember { WindowInsetsControllerCompat(it, it.decorView) } }
+
+    // 在组合时设置全屏
+    DisposableEffect(insetsController) {
+        insetsController?.hide(WindowInsetsCompat.Type.systemBars())
+        insetsController?.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+        onDispose {
+            // 清理时恢复系统栏
+            insetsController?.show(WindowInsetsCompat.Type.systemBars())
         }
-    ) { paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = "home",
-            modifier = Modifier.padding(paddingValues)
+    }
+
+    var alreadyGone by remember { mutableStateOf(false) }
+
+    // 检查初始网络状态
+    val hasNetwork = remember { isNetworkAvailable(context) }
+    val localUrl = sharedPref.getString("localUrl", "")
+
+    // 在这里停留1.2s
+    LaunchedEffect(Unit) {
+        // 如果不是离线模式且无网络连接，跳转到错误页面
+        if (!hasNetwork && !offlineMode) {
+            context.startActivity(Intent(context, NetworkErrorActivity::class.java))
+            return@LaunchedEffect
+        }
+        delay(1200) // 1.2秒延迟
+
+        // 如果没有配置 URL，跳转到配置页面
+        if (localUrl.isNullOrEmpty() && !alreadyGone) {
+            context.startActivity(Intent(context, URLConfigActivity::class.java))
+        }
+        // 如果有 URL，直接跳转到主显示页
+        else if (!alreadyGone) {
+            // 这里可以添加跳转到主页面的逻辑
+        }
+    }
+
+    // 使用 Box 作为根布局，应用 WindowInsets 来铺满整个屏幕
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            composable("home") { HomeScreen(navController) }
-            composable("gallery") { GalleryScreen(navController) }
-            composable("profile") { ProfileScreen(navController) }
-            composable("image/{url}") { backStackEntry ->
-                val imageUrl = backStackEntry.arguments?.getString("url") ?: ""
-                ImageDetailScreen(navController, imageUrl)
-            }
-        }
-    }
-}
+            Spacer(modifier = Modifier.weight(1f)) // 占据剩余空间，使文本在底部
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopAppBarWithBackButton(
-    currentRoute: String?,
-    onBackClick: () -> Unit,
-    navigateToHome: () -> Unit
-) {
-    var showBackButton by remember { mutableStateOf(false) }
+            // 中央logo图片
+            Image(
+                painter = painterResource(id = R.drawable.icon_1024_transp),
+                contentDescription = "Logo",
+                modifier = Modifier
+                    .size(200.dp)
+                    .padding(bottom = 100.dp) // 为底部文本留出空间
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null // 移除点击波纹效果
+                    ) {
+                        // 在这里添加点击事件逻辑
+                        println("Logo被点击")
+                        alreadyGone = true
+                        // 例如：可以打开关于页面、显示版本信息等
+                        context.startActivity(Intent(context, URLConfigActivity::class.java))
+                    },
+            )
 
-    showBackButton = when (currentRoute) {
-        "home" -> false
-        else -> true
-    }
+            Spacer(modifier = Modifier.weight(1f)) // 占据剩余空间，使文本在底部
 
-    TopAppBar(
-        title = {
+            // 底部文字
             Text(
-                text = when (currentRoute) {
-                    "home" -> "首页"
-                    "gallery" -> "图库"
-                    "profile" -> "个人资料"
-                    "image/{url}" -> "图片详情"
-                    else -> "应用"
-                },
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        navigationIcon = {
-            if (showBackButton) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "返回"
-                    )
-                }
-            } else {
-                IconButton(onClick = navigateToHome) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "首页"
-                    )
-                }
-            }
-        },
-        actions = {
-            IconButton(onClick = { /* 处理搜索 */ }) {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "搜索"
-                )
-            }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            titleContentColor = Color.White,
-            navigationIconContentColor = Color.White,
-            actionIconContentColor = Color.White
-        )
-    )
-}
-
-@Composable
-fun HomeScreen(navController: androidx.navigation.NavHostController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "首页",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // 使用 Coil 加载网络图片
-        AsyncImage(
-            model = "https://picsum.photos/300/200",
-            contentDescription = "示例图片",
-            modifier = Modifier
-                .size(200.dp)
-                .clip(RoundedCornerShape(16.dp)),
-            contentScale = ContentScale.Crop
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = { navController.navigate("gallery") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Text("查看图库")
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { navController.navigate("profile") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6200EE))
-        ) {
-            Text("个人资料")
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Text(
-            text = "使用 Coil 加载网络图片",
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
-    }
-}
-
-@Composable
-fun GalleryScreen(navController: androidx.navigation.NavHostController) {
-    val imageUrls = listOf(
-        "https://picsum.photos/400/300?random=1",
-        "https://picsum.photos/400/300?random=2",
-        "https://picsum.photos/400/300?random=3",
-        "https://picsum.photos/400/300?random=4",
-        "https://picsum.photos/400/300?random=5",
-        "https://picsum.photos/400/300?random=6"
-    )
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        items(imageUrls) { imageUrl ->
-            Card(
+                text = "http://www.rtlink.com.cn/",
+                color = RtmobileTheme.primary,
+                fontSize = 15.sp,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .clickable { navController.navigate("image/$imageUrl") },
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(imageUrl)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = "图片",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentScale = ContentScale.Crop
-                )
-            }
+                    .padding(bottom = 10.dp)
+            )
         }
     }
 }
 
-@Composable
-fun ProfileScreen(navController: androidx.navigation.NavHostController) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top
-    ) {
-        // 圆形头像
-        AsyncImage(
-            model = "https://picsum.photos/150/150?random=7",
-            contentDescription = "头像",
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "张三",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Android 开发者",
-            fontSize = 16.sp,
-            color = Color.Gray
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "个人信息",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text("姓名：张三")
-                Text("年龄：28")
-                Text("职业：Android 开发工程师")
-                Text("技能：Kotlin, Compose, Java")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = { navController.navigate("gallery") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Text("查看我的图片")
-        }
-    }
-}
-
-@Composable
-fun ImageDetailScreen(
-    navController: androidx.navigation.NavHostController,
-    imageUrl: String
-) {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        // 全屏显示图片
-        AsyncImage(
-            model = imageUrl,
-            contentDescription = "详情图片",
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            contentScale = ContentScale.Fit
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = { navController.popBackStack() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Text("返回")
-        }
-    }
-}
-
-@Composable
-fun ImageNavigationTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        colorScheme = lightColorScheme(
-            primary = Color(0xFF6200EE),
-            secondary = Color(0xFF03DAC6),
-            background = Color.White,
-            surface = Color.White,
-            onPrimary = Color.White,
-            onSecondary = Color.Black,
-            onBackground = Color.Black,
-            onSurface = Color.Black
-        )
-    ) {
-        content()
-    }
+private fun isNetworkAvailable(context: Context): Boolean {
+    val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val network = cm.activeNetwork
+    val capabilities = cm.getNetworkCapabilities(network)
+    return capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
 }
 
 

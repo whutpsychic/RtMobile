@@ -3,11 +3,13 @@ package com.rtlink.rtmobile.activities
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -17,14 +19,18 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.rtlink.rtmobile.developing
 import com.rtlink.rtmobile.ui.RtmobileTheme
+import com.rtlink.rtmobile.utils.isValidUrl
+import com.rtlink.rtmobile.R
+import com.rtlink.rtmobile.utils.LocalStorage
 
 class URLConfigActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,20 +39,68 @@ class URLConfigActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RtmobileTheme {
-                URLConfigScreen()
+                URLConfigScreen(this)
             }
         }
     }
+
 }
 
 @Composable
-fun URLConfigScreen() {
-    var serverRemark by remember { mutableStateOf(TextFieldValue("")) }
+fun URLConfigScreen(activity: ComponentActivity) {
     var localUrl by remember { mutableStateOf(TextFieldValue("")) }
     var useHttps by remember { mutableStateOf(true) }
 
+    // 尝试加载当前使用的url
+    val localStorage = LocalStorage(activity)
+    val str: String? = localStorage.read("rtmobile_localUrl")
+
+    if(str != null){
+        localUrl = TextFieldValue(str)
+    }
+
+    // 使用 derivedStateOf 来同步 useHttps 状态
+    // 根据URL更新useHttps状态
+    LaunchedEffect(localUrl) {
+        val text = localUrl.text.lowercase()
+        if (text.startsWith("https://")) {
+            useHttps = true
+        } else if (text.startsWith("http://")) {
+            useHttps = false
+        }
+    }
+
     val focusManager = LocalFocusManager.current  // 获取焦点管理器
     val context = LocalContext.current // 获取 Context
+
+    // 根据地址字符串矫正switch值
+    fun correctSwitchValueByUrl() {
+        val text = localUrl.text.lowercase()
+        // 如果是http开头，将url修正为https
+        useHttps = !text.startsWith("http:")
+    }
+
+    // 根据 switch https 按钮的值修复地址字符串
+    fun correctUrlBySwitch() {
+        val text = localUrl.text.lowercase()
+        // 根据启用修正地址字符串
+        if (useHttps) {
+            // 如果是http开头，将url修正为https
+            if (text.startsWith("http:")) {
+                useHttps = true
+                val result = text.replaceFirst("http:", "https:")
+                localUrl = TextFieldValue(result)
+            }
+        }
+        // 根据不启用修正地址字符串
+        else {
+            if (text.startsWith("https:")) {
+                useHttps = false
+                val result = text.replaceFirst("https:", "http:")
+                localUrl = TextFieldValue(result)
+            }
+        }
+    }
 
     // 👇 启动扫码的 launcher
     val scanLauncher = rememberLauncherForActivityResult(
@@ -60,7 +114,8 @@ fun URLConfigScreen() {
                 if (developing) {
                     println(" --------------------------- result: $scannedResult ")
                 }
-                localUrl = TextFieldValue(scannedResult)
+                localUrl = TextFieldValue(scannedResult.trim())
+                correctSwitchValueByUrl()
             }
             // 用户主动退出
             else {
@@ -83,25 +138,16 @@ fun URLConfigScreen() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-        // 标题
-        Text(
-            text = "URL 配置",
-            fontSize = 20.sp,
-            style = MaterialTheme.typography.headlineMedium,
+        Spacer(modifier = Modifier.height(20.dp))
+        // Logo 图片
+        Image(
+            painter = painterResource(id = R.drawable.icon_1024_transp), // 使用你的图片资源
+            contentDescription = "应用 Logo",
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 50.dp, top = 50.dp),
-            textAlign = TextAlign.Center
+                .size(150.dp) // 设置图片大小为 100dp，可以根据需要调整
+                .padding(vertical = 20.dp),
+            contentScale = ContentScale.Fit // 保持图片比例适应容器
         )
-
-        OutlinedTextField(
-            value = serverRemark,
-            onValueChange = { serverRemark = it },
-            label = { Text("服务器备注") },
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(10.dp))
 
         OutlinedTextField(
             value = localUrl,
@@ -110,7 +156,7 @@ fun URLConfigScreen() {
             trailingIcon = {
                 IconButton(
                     onClick = {
-                        scanLauncher.launch(Intent(context, ScannerActivity::class.java))
+                        scanLauncher.launch(Intent(context, ScanningActivity::class.java))
                     }
                 ) {
                     Icon(
@@ -140,7 +186,9 @@ fun URLConfigScreen() {
 
             Switch(
                 checked = useHttps,
-                onCheckedChange = { useHttps = it; focusManager.clearFocus() },
+                onCheckedChange = {
+                    useHttps = it; correctUrlBySwitch(); focusManager.clearFocus()
+                },
                 modifier = Modifier.size(50.dp, 30.dp)
             )
         }
@@ -171,16 +219,19 @@ fun URLConfigScreen() {
             // 保存按钮
             Button(
                 onClick = {
-                    // TODO: 添加继续逻辑
-                    // 获取输入值
-                    println(" ================ ")
-                    println(serverRemark.text)
-                    println(localUrl.text)
-                    context.startActivity(
-                        Intent(context, WebViewActivity::class.java).apply {
-                            putExtra("url", "https://www.tencent.com")
-                        }
-                    )
+                    if (isValidUrl(localUrl.text)) {
+                        // 存储（长期有效）
+                        localStorage.write("rtmobile_localUrl", localUrl.text)
+
+                        context.startActivity(
+                            Intent(context, WebViewActivity::class.java).apply {
+                                putExtra("url", localUrl.text)
+                            }
+                        )
+                    } else {
+                        // 错误提示
+                        Toast.makeText(context, "不合法的URL，请重新输入地址", Toast.LENGTH_LONG).show()
+                    }
                 },
                 modifier = Modifier
                     .weight(1f)

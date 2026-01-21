@@ -22,6 +22,7 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
     VanButton: typeof import('vant/es')['Button']
+    VanUploader: typeof import('vant/es')['Uploader']
     WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
   }
 }
@@ -38,5 +39,6 @@ declare global {
   const RouterView: typeof import('vue-router')['RouterView']
   const TheWelcome: typeof import('./src/components/TheWelcome.vue')['default']
   const VanButton: typeof import('vant/es')['Button']
+  const VanUploader: typeof import('vant/es')['Uploader']
   const WelcomeItem: typeof import('./src/components/WelcomeItem.vue')['default']
 }

@@ -12,4 +12,5 @@ interface Window {
     messageHandlers?: WebKitMessageHandlers
   }
   rtmobile?: any
+  Android?: any
 }

@@ -3,7 +3,8 @@
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
   </header>
   <div class="btns">
-    <van-button type="primary" block class="btn" @click="onTest">test</van-button>
+    <van-uploader v-model="files" />
+    <!-- <van-button type="primary" block class="btn" @click="onTest">test</van-button> -->
     <van-button type="primary" block class="btn" @click="onGetDeviceInfo">获取设备信息</van-button>
     <van-button type="primary" block class="btn" @click="onWriteLocal">写入本地缓存</van-button>
     <van-button type="primary" block class="btn" @click="onReadLocal">读取本地缓存</van-button>
@@ -19,31 +20,39 @@
 <script setup lang="ts">
 import { ref, type Ref } from 'vue'
 import rtm from '$'
-import { scan, getDeviceInfo, writeLocal, readLocal, preDial, checkoutNetwork, setScreenHorizontal, setScreenPortrait } from '$'
-import { showToast } from 'vant';
+// import { isIOS, isAndroid } from '$'
+import {
+  scan,
+  getDeviceInfo,
+  writeLocal,
+  readLocal,
+  preDial,
+  checkoutNetwork,
+  setScreenHorizontal,
+  setScreenPortrait,
+} from '$'
+import { showToast } from 'vant'
 
 const result: Ref<string> = ref('')
 
 rtm.init()
 
-const onTest = () => {
-  showToast({
-    duration: 0,
-    closeOnClick: true,
-    message: 'res'
-  })
-}
+const files = ref([])
+
+// const onTest = () => {
+  
+// }
 
 // 写入本地缓存
 const onWriteLocal = async () => {
-  await writeLocal("key1", "value111111", 2)
+  await writeLocal('key1', 'value111111', 5)
   showToast('写入成功')
 }
 
 // 读取本地缓存
 const onReadLocal = async () => {
-  const res: string = await readLocal("key111")
-  showToast(`读取键名为key111的缓存值为${res}`)
+  const res: string = await readLocal('key1')
+  showToast(`读取键名为key1的缓存值为${res}`)
 }
 
 // 电话拨号
@@ -75,7 +84,7 @@ const onGetDeviceInfo = async () => {
   try {
     const data = JSON.parse(res)
     const { systemName, systemVersion, deviceName, modelDisplayName, screenWidth, screenHeight, orientation, deviceId } = data
-    const result = `系统名称: ${systemName}\n 系统版本: ${systemVersion}\n 设备名称: ${deviceName}\n 型号名称: ${modelDisplayName}\n 屏幕尺寸: ${screenWidth} x ${screenHeight}\n 当前方向: ${orientation}\n 设备唯一标识符: ${deviceId}`
+    const result = `系统名称: ${systemName}\n 系统版本: ${systemVersion}\n 设备名称: ${deviceName}\n 型号名称: ${modelDisplayName}\n 屏幕尺寸: ${screenWidth} x ${screenHeight}\n 当前方向: ${orientation}\n 设备唯一标识符: ${deviceId} \n自 Android10 起，已无法再获取唯一标识`
     showToast({
       duration: 0,
       closeOnClick: true,
@@ -94,7 +103,6 @@ const onScan = async () => {
     result.value = `${res}`
   }
 }
-
 </script>
 
 <style scoped>

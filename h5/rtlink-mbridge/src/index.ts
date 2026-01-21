@@ -10,6 +10,16 @@ import {
   setScreenHorizontal as setScreenHorizontalIOS,
   setScreenPortrait as setScreenPortraitIOS,
 } from './iOS'
+import {
+  scan as scanAndroid,
+  getDeviceInfo as getDeviceInfoAndroid,
+  writeLocal as writeLocalAndroid,
+  readLocal as readLocalAndroid,
+  preDial as preDialAndroid,
+  checkoutNetwork as checkoutNetworkAndroid,
+  setScreenHorizontal as setScreenHorizontalAndroid,
+  setScreenPortrait as setScreenPortraitAndroid,
+} from './android'
 
 interface RTMobileBridge {
   init(): void
@@ -36,9 +46,10 @@ const rtm: RTMobileBridge = {
 
 // 初始化逻辑
 export default rtm
+export { isIOS, isAndroid }
 
 // 【 获取设备信息 】
-// -------------- iOS --------------
+// -------------- iOS / Android --------------
 // "deviceId": 设备唯一标识符,
 // "deviceName": 设备名称,
 // "systemName": 系统名称,
@@ -47,38 +58,39 @@ export default rtm
 // "screenWidth": 屏幕宽度,
 // "screenHeight": 屏幕高度,
 // "orientation": 当前屏幕方向（横向/竖向）,
-export const getDeviceInfo: () => Promise<any> = async () => {
+export const getDeviceInfo: () => Promise<string> = async () => {
   if (isIOS()) {
     return getDeviceInfoIOS()
   } else if (isAndroid()) {
-    return Promise.resolve('X')
+    return getDeviceInfoAndroid()
   } else {
-    return Promise.resolve('')
+    return Promise.resolve('X')
   }
 }
 
 // 【 写入本地缓存 】
-// -------------- iOS --------------
+// -------------- iOS / Android --------------
 // 参数说明:
 //  - key: 缓存键
 //  - value: 缓存值
 //  - seconds: 有效期默认为99年
-export const writeLocal: (k: string, v: string, s?: number) => Promise<any> = async (
+export const writeLocal: (k: string, v: string, s?: number) => Promise<unknown> = async (
   key: string,
   value: string,
   seconds?: number,
 ) => {
+  const validityPeriod: number = 3600 * 24 * 365 * 99
   if (isIOS()) {
-    return writeLocalIOS(key, value, seconds ?? 3600 * 24 * 365 * 99)
+    return writeLocalIOS(key, value, seconds ?? validityPeriod)
   } else if (isAndroid()) {
-    return Promise.resolve('X')
+    return writeLocalAndroid(key, value, seconds ?? validityPeriod)
   } else {
-    return Promise.resolve('')
+    return Promise.resolve('X')
   }
 }
 
 // 【 读取本地缓存 】
-// -------------- iOS --------------
+// -------------- iOS / Android --------------
 // 参数说明:
 //  - key: 缓存键
 // 如果数据过期或不存在则读取结果为""
@@ -86,19 +98,19 @@ export const readLocal: (k: string) => Promise<string> = async (key: string) => 
   if (isIOS()) {
     return readLocalIOS(key)
   } else if (isAndroid()) {
-    return Promise.resolve('X')
+    return readLocalAndroid(key)
   } else {
-    return Promise.resolve('')
+    return Promise.resolve('X')
   }
 }
 
 // 【 拨打电话 】
-// -------------- iOS --------------
+// -------------- iOS / Android --------------
 export const preDial: (n: string) => void = async (number: string) => {
   if (isIOS()) {
     return preDialIOS(number)
   } else if (isAndroid()) {
-    return
+    return preDialAndroid(number)
   } else {
     return
   }
@@ -108,42 +120,45 @@ export const preDial: (n: string) => void = async (number: string) => {
 // -------------- iOS --------------
 // 可能得到的结果:
 // ['Wifi', 'Cellular', 'Ethernet', 'Loopback', 'Connected', 'Disconnected']
+// -------------- Android --------------
+// 可能得到的结果:
+// ['WIFI', 'MOBILE', 'BLUETOOTH', 'ETHERNET', 'VPN', 'null']
 export const checkoutNetwork: () => Promise<string> = async () => {
   if (isIOS()) {
     return checkoutNetworkIOS()
   } else if (isAndroid()) {
-    return Promise.resolve('X')
+    return checkoutNetworkAndroid()
   } else {
-    return Promise.resolve('')
+    return Promise.resolve('X')
   }
 }
 
 // 【 切为横屏 】
-// -------------- iOS --------------
+// -------------- iOS / Android --------------
 export const setScreenHorizontal: () => Promise<void> = async () => {
   if (isIOS()) {
     return setScreenHorizontalIOS()
   } else if (isAndroid()) {
-    return Promise.resolve()
+    return setScreenHorizontalAndroid()
   } else {
     return Promise.resolve()
   }
 }
 
 // 【 切为竖屏 】
-// -------------- iOS --------------
+// -------------- iOS / Android --------------
 export const setScreenPortrait: () => Promise<void> = async () => {
   if (isIOS()) {
     return setScreenPortraitIOS()
   } else if (isAndroid()) {
-    return Promise.resolve()
+    return setScreenPortraitAndroid()
   } else {
     return Promise.resolve()
   }
 }
 
 // 【 混合扫码 】
-// -------------- iOS --------------
+// -------------- iOS / Android --------------
 // 支持的码类型
 // .qr,
 // .code128,
@@ -158,8 +173,8 @@ export const scan: () => Promise<string> = async () => {
   if (isIOS()) {
     return scanIOS()
   } else if (isAndroid()) {
-    return Promise.resolve('X')
+    return scanAndroid()
   } else {
-    return Promise.resolve('')
+    return Promise.resolve('X')
   }
 }

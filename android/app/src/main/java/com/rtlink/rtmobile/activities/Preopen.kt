@@ -54,21 +54,35 @@ fun PreOpenScreen() {
 
     // 在这里停留1.2s
     LaunchedEffect(Unit) {
-        // 如果不是离线模式且无网络连接，跳转到错误页面
-        if (!hasNetwork && !offlineMode) {
-            context.startActivity(Intent(context, NetworkErrorActivity::class.java))
-            return@LaunchedEffect
-        }
-        delay(1200) // 1.2秒延迟
 
-        // 如果没有配置 URL，跳转到配置页面
-        if (localUrl.isNullOrEmpty() && !alreadyGone) {
-            context.startActivity(Intent(context, URLConfigActivity::class.java))
+        // 离线式模式直接前往加载本地页面
+        if(offlineMode){
+
         }
-        // 如果有 URL，直接跳转到主显示页
-        else if (!alreadyGone) {
-            // 这里可以添加跳转到主页面的逻辑
+        // 否则根据具体情况跳转
+        else{
+            // 如果不是离线模式且无网络连接，跳转到错误页面
+            if (!hasNetwork) {
+                context.startActivity(Intent(context, NetworkErrorActivity::class.java))
+                return@LaunchedEffect
+            }
+            delay(1200) // 1.2秒延迟
+
+            // 如果没有配置 URL，跳转到配置页面
+            if (localUrl.isNullOrEmpty() && !alreadyGone) {
+                context.startActivity(Intent(context, URLConfigActivity::class.java))
+            }
+            // 如果有 URL，直接跳转到主显示页
+            else if (!alreadyGone) {
+                // 这里可以添加跳转到主页面的逻辑
+                context.startActivity(
+                    Intent(context, WebViewActivity::class.java).apply {
+                        putExtra("url", localUrl)
+                    }
+                )
+            }
         }
+
     }
 
     // 使用 Box 作为根布局，应用 WindowInsets 来铺满整个屏幕
@@ -98,7 +112,6 @@ fun PreOpenScreen() {
                         indication = null // 移除点击波纹效果
                     ) {
                         // 在这里添加点击事件逻辑
-                        println("Logo被点击")
                         alreadyGone = true
                         // 例如：可以打开关于页面、显示版本信息等
                         context.startActivity(Intent(context, URLConfigActivity::class.java))

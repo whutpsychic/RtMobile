@@ -6,3 +6,8 @@
   padding: 2rem;
   font-weight: normal;
 }
+
+/* ====================== vant bug fixed ====================== */
+.van-toast {
+  background-color: rgba(0, 0, 0, 0.7) !important; /* 设置你想要的背景颜色 */
+}

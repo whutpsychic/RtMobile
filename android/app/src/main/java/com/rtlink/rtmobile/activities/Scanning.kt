@@ -36,7 +36,7 @@ import com.rtlink.rtmobile.ui.RtmobileTheme
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class ScannerActivity : ComponentActivity() {
+class ScanningActivity : ComponentActivity() {
     private lateinit var cameraExecutor: ExecutorService
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -4,6 +4,10 @@ package com.rtlink.rtmobile
 // 部分环节有输出信息
 const val developing: Boolean = true // 开发模式
 
+const val IO_NAME: String = "Android" // web端JS调用原生接口时的对象名字
+
+const val RAM_NAME: String = "rtmobile" // RAM名称
+
 const val spliter: String = "|rtm|" // 函数名和参数分隔符
 
 // 离线模式下：

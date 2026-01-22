@@ -7,7 +7,6 @@ import java.util.concurrent.TimeUnit
 
 /**
  * 本地键值对存储工具类（支持过期时间）
- * - weburl: webView 当前指向的URL
  * - 支持设置缓存有效期
  * - 支持多种数据类型
  */

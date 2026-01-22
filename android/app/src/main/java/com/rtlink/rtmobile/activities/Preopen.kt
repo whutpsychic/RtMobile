@@ -57,7 +57,11 @@ fun PreOpenScreen() {
 
         // 离线式模式直接前往加载本地页面
         if(offlineMode){
-
+            context.startActivity(
+                Intent(context, WebViewActivity::class.java).apply {
+                    putExtra("url", "localUrl")
+                }
+            )
         }
         // 否则根据具体情况跳转
         else{

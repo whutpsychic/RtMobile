@@ -54,7 +54,7 @@ class WebIO(private val activity: WebViewActivity, private val webView: WebView?
         jsonStr += """ "screenHeight": "$screenHeight", """
         jsonStr += """ "screenScale": "$screenScale", """
         jsonStr += """ "orientation": "$currentInterfaceOrientation", """
-        jsonStr += """ "deviceId": undefined """
+        jsonStr += """ "deviceId": "null" """
         jsonStr += "}"
 
         activity.runOnUiThread {

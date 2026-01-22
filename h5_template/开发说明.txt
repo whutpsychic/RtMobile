@@ -1,0 +1,73 @@
+# 开发说明
+
+## 【 服务器地址 】
+ - 如果您需要配置服务器地址，请关注/public/serverConfig.js。
+ - 并结合/src/utils/index#getURLByType方法配合修改。
+
+## 【 关于 css vh 】
+ - 部分android机内置的浏览器似乎不支持vh计量单位，所以预置了自定义的变量 --vh 用以兼容这些机型。
+
+## 【 关于原生接口与地址配置 】
+ - 当您看到瑞太logo时点击logo图标即可跳转至地址配置页，配置的地址长期有效。
+ - 点击《登录页》上方的标题可跳转至《开发者演示页》，里面放置了所有的原生接口演示项。
+ - 桥接包为 rtlink-mbridge。
+
+## 【 rtlink-mbridge 使用说明 】
+
+// 【 获取设备信息 】
+ - getDeviceInfo()
+// -------------- iOS / Android --------------
+// "deviceId": 设备唯一标识符,
+// "deviceName": 设备名称,
+// "systemName": 系统名称,
+// "systemVersion": 系统版本号,
+// "modelDisplayName": 设备型号名称,
+// "screenWidth": 屏幕宽度,
+// "screenHeight": 屏幕高度,
+// "orientation": 当前屏幕方向（横向/竖向）,
+
+// 【 写入本地缓存 】
+ - writeLocal(key: string, value: string, seconds?: number)
+// -------------- iOS / Android --------------
+// 参数说明:
+//  - key: 缓存键
+//  - value: 缓存值
+//  - seconds: 有效期默认为99年
+
+
+// 【 读取本地缓存 】
+ - readLocal(key: string)
+// -------------- iOS / Android --------------
+// 参数说明:
+//  - key: 缓存键
+// 如果数据过期或不存在则读取结果为""
+
+
+// 【 拨打电话 】
+ - preDial(number: string)
+// 参数说明:
+//  - number: 电话号
+
+// 【 检查网络连接 】
+ - checkoutNetwork()
+// -------------- iOS --------------
+// 可能得到的结果:
+// ['Wifi', 'Cellular', 'Ethernet', 'Loopback', 'Connected', 'Disconnected']
+// -------------- Android --------------
+// 可能得到的结果:
+// ['WIFI', 'MOBILE', 'BLUETOOTH', 'ETHERNET', 'VPN', 'null']
+
+
+// 【 混合扫码 】
+ - scan()
+// -------------- iOS / Android --------------
+// 支持的码类型
+// .qr,
+// .code128,
+// .code39,
+// .code93,
+// .pdf417,
+// .ean13,
+// .ean8,
+// .upce,
+// .dataMatrix

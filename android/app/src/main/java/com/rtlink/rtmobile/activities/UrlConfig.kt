@@ -1,6 +1,7 @@
 package com.rtlink.rtmobile.activities
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -30,7 +31,6 @@ import com.rtlink.rtmobile.developing
 import com.rtlink.rtmobile.ui.RtmobileTheme
 import com.rtlink.rtmobile.utils.isValidUrl
 import com.rtlink.rtmobile.R
-import com.rtlink.rtmobile.utils.LocalStorage
 
 class URLConfigActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,7 +39,7 @@ class URLConfigActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             RtmobileTheme {
-                URLConfigScreen(this)
+                URLConfigScreen()
             }
         }
     }
@@ -47,16 +47,20 @@ class URLConfigActivity : ComponentActivity() {
 }
 
 @Composable
-fun URLConfigScreen(activity: ComponentActivity) {
+fun URLConfigScreen() {
+    val context = LocalContext.current // 获取 Context
+    val sharedPref = context.getSharedPreferences("RtmobilePrefs", Context.MODE_PRIVATE)
+
     var localUrl by remember { mutableStateOf(TextFieldValue("")) }
     var useHttps by remember { mutableStateOf(true) }
 
-    // 尝试加载当前使用的url
-    val localStorage = LocalStorage(activity)
-    val str: String? = localStorage.read("rtmobile_localUrl")
-
-    if(str != null){
-        localUrl = TextFieldValue(str)
+    // 初始化逻辑 - 相当于 onCreate
+    LaunchedEffect(Unit) {
+        // 尝试加载当前使用的url
+        val str: String? = sharedPref.getString("localUrl", "")
+        if (str != null) {
+            localUrl = TextFieldValue(str)
+        }
     }
 
     // 使用 derivedStateOf 来同步 useHttps 状态
@@ -71,7 +75,6 @@ fun URLConfigScreen(activity: ComponentActivity) {
     }
 
     val focusManager = LocalFocusManager.current  // 获取焦点管理器
-    val context = LocalContext.current // 获取 Context
 
     // 根据地址字符串矫正switch值
     fun correctSwitchValueByUrl() {
@@ -221,7 +224,7 @@ fun URLConfigScreen(activity: ComponentActivity) {
                 onClick = {
                     if (isValidUrl(localUrl.text)) {
                         // 存储（长期有效）
-                        localStorage.write("rtmobile_localUrl", localUrl.text)
+                        sharedPref.edit().putString("localUrl", localUrl.text).apply()
 
                         context.startActivity(
                             Intent(context, WebViewActivity::class.java).apply {
@@ -230,7 +233,8 @@ fun URLConfigScreen(activity: ComponentActivity) {
                         )
                     } else {
                         // 错误提示
-                        Toast.makeText(context, "不合法的URL，请重新输入地址", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "不合法的URL，请重新输入地址", Toast.LENGTH_LONG)
+                            .show()
                     }
                 },
                 modifier = Modifier

@@ -11,6 +11,7 @@ import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -19,6 +20,7 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.compose.BackHandler
@@ -31,7 +33,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.CircularProgressIndicator
@@ -45,11 +46,13 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.rtlink.rtmobile.IO_NAME
 import com.rtlink.rtmobile.RAM_NAME
+import com.rtlink.rtmobile.offlineMode
 import com.rtlink.rtmobile.utils.WebIO
 import com.rtlink.rtmobile.utils.getFnNameByTag
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 class WebViewActivity : ComponentActivity() {
     // 全局变量用于存储扫描结果启动器
@@ -61,6 +64,8 @@ class WebViewActivity : ComponentActivity() {
         var currentWebView: WebView? = null
     }
 
+    @OptIn(ExperimentalEncodingApi::class)
+    @SuppressLint("SetJavaScriptEnabled", "InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 沉浸式渲染
@@ -89,6 +94,12 @@ class WebViewActivity : ComponentActivity() {
         }
     }
 
+    // 关键修复：处理屏幕旋转（刷新网页）
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+//        currentWebView?.reload()
+    }
+
     // 提供公共方法供外部调用
     fun startScanning(intent: Intent) {
         scanResultLauncher.launch(intent)
@@ -115,6 +126,7 @@ fun WebViewScreen(
     activity: ComponentActivity,
     scanLauncher: ActivityResultLauncher<Intent>
 ) {
+    var firstLoaded: Boolean by remember { mutableStateOf(false) }
     // webView 实例
     var webView: WebView? by remember { mutableStateOf(null) }
     var isLoading by remember { mutableStateOf(true) } // 网页加载中
@@ -260,7 +272,7 @@ fun WebViewScreen(
         if (webView?.canGoBack() == true) {
             webView?.goBack()
         } else {
-            print("zbcxxx") // 执行你要求的打印
+//            print("zbcxxx") // 执行你要求的打印
             // 可选：关闭页面
             // activity.finish()
         }
@@ -271,8 +283,7 @@ fun WebViewScreen(
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(
-                WindowInsets.statusBars // 状态栏
-                    .union(WindowInsets.navigationBars) // 导航栏
+                WindowInsets.navigationBars // 导航栏
                     .union(WindowInsets.ime) // 输入法
             )
     ) {
@@ -282,9 +293,15 @@ fun WebViewScreen(
                     settings.apply {
                         javaScriptEnabled = true
                         domStorageEnabled = true
-                        databaseEnabled = true
                         useWideViewPort = true
                         loadWithOverviewMode = true
+                        // 添加 viewport-fit=cover（解决视口高度计算问题）
+                        layoutAlgorithm = WebSettings.LayoutAlgorithm.NARROW_COLUMNS
+                        // 重要：必须设置这个，否则WebView不会适配状态栏/导航栏
+                        setSupportZoom(false)
+                        // 离线配置（关键）
+                        allowFileAccessFromFileURLs = true
+                        allowUniversalAccessFromFileURLs = true
                     }
 
                     webViewClient = object : WebViewClient() {
@@ -300,6 +317,35 @@ fun WebViewScreen(
 
                         override fun onPageFinished(view: WebView?, url: String?) {
                             isLoading = false
+
+                            if (!firstLoaded) {
+                                // 修复css vh 失效的问题：注入动态高度计算(并未在此执行)
+                                val js = """
+                        // 注入自定义vh，用以兼容android不支持vh的浏览器
+      (function () {
+        var vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", vh + "px");
+        var style = document.createElement("style");
+        style.innerHTML = `
+                                body {
+                                    height: calc(var(--vh, 1vh) * 100);
+                                    overflow: hidden;
+                                }
+                            `;
+        document.head.appendChild(style);
+        
+        window.addEventListener('resize', () => {
+          // 视口变化触发重新计算
+          var vh = window.innerHeight * 0.01;
+          document.documentElement.style.setProperty("--vh", vh + "px");
+        })
+      })();
+                    """.trimIndent()
+
+                                view?.evaluateJavascript(js, null)
+
+                                firstLoaded = true
+                            }
                         }
                     }
 
@@ -329,8 +375,14 @@ fun WebViewScreen(
                         }
                     }
 
-                    clearCache(true)
-                    loadUrl(url)
+                    clearCache(true) // 清理缓存
+
+                    if (offlineMode) {
+                        val offlineHtmlPath = "file:///android_asset/dist/index.html"
+                        loadUrl(offlineHtmlPath)
+                    } else {
+                        loadUrl(url)
+                    }
                     // 保存当前WebView实例到Activity的静态变量
                     WebViewActivity.currentWebView = this
 
@@ -344,6 +396,7 @@ fun WebViewScreen(
             modifier = Modifier.fillMaxSize()
         )
 
+        // 加载中...
         if (isLoading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center)

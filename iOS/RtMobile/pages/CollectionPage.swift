@@ -29,8 +29,6 @@ struct CollectionPage: View {
                 List {
                     ForEach(Array(collectionManager.collections.enumerated()), id: \.element.id) { index, item in
                         CollectionRowView(item: item){
-                            print(item.title)
-                            print(item.url)
                             onConfirm(item)
                             dismiss()
                         }

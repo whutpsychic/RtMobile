@@ -44,7 +44,7 @@ const onGoToDeveloper = () => {
 const onSubmit = () => {
   // 测试时用（免登录）
   if (developing && nologin) {
-    router.replace('/home')
+    router.push('/home')
     return
   }
   showLoadingToast({

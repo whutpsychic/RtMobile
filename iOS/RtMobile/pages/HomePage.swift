@@ -44,6 +44,20 @@ struct HomePage: View {
     
     var body: some View {
         VStack {
+            HStack{
+                Text(" ")
+                Spacer()
+                // 扫码按钮（使用 SF Symbol 图标）
+                Button(action: {
+                    isScanning = true
+                }) {
+                    Image(systemName: "qrcode.viewfinder")
+                        .foregroundColor(.blue)
+                        .font(.title2)
+                }
+                .buttonStyle(PlainButtonStyle()) // 去掉默认高亮
+            }
+            .padding()
             // logo图片
             Image("logo_transp")
                 .resizable()          // 允许图片缩放
@@ -66,13 +80,15 @@ struct HomePage: View {
                     
                     // 扫码按钮（使用 SF Symbol 图标）
                     Button(action: {
-                        isScanning = true
+                        pageToOpen = urlValue
                     }) {
-                        Image(systemName: "qrcode.viewfinder")
+                        Image(systemName: "arrow.right")
                             .foregroundColor(.blue)
-                            .font(.title2)
+                            .font(.title3)
                     }
                     .buttonStyle(PlainButtonStyle()) // 去掉默认高亮
+                    .disabled(urlValue.isEmpty) // 当 urlValue 为空时禁用按钮
+                    
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 15)

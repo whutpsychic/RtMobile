@@ -29,8 +29,6 @@ struct HistoryPage: View {
                 List {
                     ForEach(Array(historyManager.history.enumerated()), id: \.element.id) { index, item in
                         HistoryRowView(item: item){
-                            print(item.title)
-                            print(item.url)
                             onConfirm(item)
                             dismiss()
                         }

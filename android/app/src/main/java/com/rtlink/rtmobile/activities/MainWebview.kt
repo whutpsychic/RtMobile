@@ -342,7 +342,7 @@ fun WebViewScreen(
       })();
                     """.trimIndent()
 
-                                view?.evaluateJavascript(js, null)
+//                                view?.evaluateJavascript(js, null)
 
                                 firstLoaded = true
                             }

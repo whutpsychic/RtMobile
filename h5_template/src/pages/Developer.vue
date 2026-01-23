@@ -1,26 +1,33 @@
 <template>
-  <div class="app-can">
-    <header>
-      <img alt="Vue logo" class="logo" src="@/assets/logo.png" width="100" height="100" />
-    </header>
-    <div class="btns">
-      <van-uploader v-model="files" />
-      <!-- <van-button type="primary" block class="btn" @click="onTest">test</van-button> -->
-      <van-button type="primary" block class="btn" @click="onGetDeviceInfo">获取设备信息</van-button>
-      <van-button type="primary" block class="btn" @click="onWriteLocal">写入本地缓存</van-button>
-      <van-button type="primary" block class="btn" @click="onReadLocal">读取本地缓存</van-button>
-      <van-button type="primary" block class="btn" @click="onPreDial">拨打电话: 13888888888</van-button>
-      <van-button type="primary" block class="btn" @click="onCheckoutNetwork">检查网络连接状态</van-button>
-      <van-button type="primary" block class="btn" @click="onSetScreenHorizontal">切为横屏</van-button>
-      <van-button type="primary" block class="btn" @click="onSetScreenPortrait">切为竖屏</van-button>
-      <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
-      <p class="text">扫码结果: {{ result }}</p>
+  <AppCan>
+    <div class="page-content">
+      <header>
+        <img alt="Vue logo" class="logo" src="@/assets/logo.png" width="100" height="100" />
+      </header>
+      <div class="btns">
+        <van-uploader v-model="files" />
+        <!-- <van-button type="primary" block class="btn" @click="onTest">test</van-button> -->
+        <van-button type="primary" block class="btn" @click="onGetDeviceInfo">获取设备信息</van-button>
+        <van-button type="primary" block class="btn" @click="onWriteLocal">写入本地缓存</van-button>
+        <van-button type="primary" block class="btn" @click="onReadLocal">读取本地缓存</van-button>
+        <van-button type="primary" block class="btn" @click="onPreDial">拨打电话: 13888888888</van-button>
+        <van-button type="primary" block class="btn" @click="onCheckoutNetwork">检查网络连接状态</van-button>
+        <van-button type="primary" block class="btn" @click="onSetScreenHorizontal">切为横屏</van-button>
+        <van-button type="primary" block class="btn" @click="onSetScreenPortrait">切为竖屏</van-button>
+        <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
+        <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
+        <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
+        <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
+        <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
+        <p class="text">扫码结果: {{ result }}</p>
+      </div>
     </div>
-  </div>
+  </AppCan>
 </template>
 
 <script setup lang="ts">
 import { ref, type Ref } from 'vue'
+import AppCan from '@/views/AppCan.vue'
 import rtm from 'rtlink-mbridge'
 // import { isIOS, isAndroid } from 'rtlink-mbridge'
 import {
@@ -108,9 +115,10 @@ const onScan = async () => {
 </script>
 
 <style scoped>
-.app-can {
+.page-content {
   height: calc(var(--vh, 1vh) * 100);
   overflow: auto;
+  background-color: white;
 }
 
 header {

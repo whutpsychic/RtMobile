@@ -11,6 +11,51 @@
   </head>
   <body>
     <div id="app"></div>
+    <script>
+      // 注入自定义vh，用以兼容android不支持vh的浏览器
+      function setupvh() {
+        var vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", vh + "px");
+      }
+      // 通过计算样式获取安全区域顶部偏移
+      function getSafeAreaTop() {
+        // 创建一个临时元素来计算环境变量
+        const tempDiv = document.createElement("div");
+        tempDiv.style.position = "absolute";
+        tempDiv.style.top = "env(safe-area-inset-top, 0px)";
+        document.body.appendChild(tempDiv);
+
+        const computedStyle = window.getComputedStyle(tempDiv);
+        const topOffset = parseFloat(computedStyle.top);
+
+        document.body.removeChild(tempDiv);
+        return topOffset ? topOffset : 32;
+      }
+      function setupSafeTop() {
+        // 使用示例
+        var safeAreaTop = getSafeAreaTop();
+        console.log("安全区域顶部偏移:", safeAreaTop, "px");
+
+        // 在 CSS 中也可以直接使用
+        // document.documentElement.style.setProperty(
+        //   "--safe-area-top",
+        //   `env(safe-area-inset-top, ${safeAreaTop}px)`,
+        // );
+        document.documentElement.style.setProperty("--safe-area-top", safeAreaTop + "px");
+      }
+      window.addEventListener("resize", () => {
+        // 视口变化触发重新计算
+        setupvh();
+        setupSafeTop();
+      });
+      
+      window.addEventListener("load", () => {
+        // 视口变化触发重新计算
+        setupvh();
+        setupSafeTop();
+      });
+      
+    </script>
     <script src="/serverConfig.js"></script>
     <script type="module" src="/src/main.ts"></script>
   </body>

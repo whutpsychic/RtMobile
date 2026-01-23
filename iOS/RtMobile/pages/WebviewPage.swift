@@ -62,16 +62,25 @@ struct WebviewPage: View {
         )
     }
     
+    // 安全区域计算属性（iOS 15+ 兼容）
+    private var safeAreaInsets: UIEdgeInsets {
+        if let windowScene = UIApplication.shared.connectedScenes
+            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+           let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
+            return window.safeAreaInsets
+        }
+        return .zero
+    }
+    
     var body: some View {
         ZStack {
             // MWebView 组件
             MWebView(url: url, manager: webViewManager){
                 lockForAWhile()
             }
+            .ignoresSafeArea() // 仅忽略所有安全区域，不指定edges
             .onReceive(webViewManager.$hasScrolled) { hasScrolled in
                 if hasScrolled {
-                    print("SwiftUI 检测到用户滑动了HTML页面")
-                    print(canFoldByScroll)
                     if(canFoldByScroll){
                         navBarVisible = false
                     }
@@ -101,6 +110,7 @@ struct WebviewPage: View {
                 )
             }
         }
+        .ignoresSafeArea() // 仅忽略所有安全区域，不指定edges
         .onChange(of: webViewManager.showCertificateAlert) {
             // 弹窗关闭时，处理用户选择
             if !webViewManager.showCertificateAlert {

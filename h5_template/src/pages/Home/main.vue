@@ -1,12 +1,15 @@
 <template>
-  <div class="app-can">
-    App 首页
-  </div>
+  <AppCan>
+    <div class="page-content">
+      App 首页
+    </div>
+  </AppCan>
 </template>
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
 import config from '@/appConfig'
+import AppCan from '@/views/AppCan.vue'
 
 const { developing } = config
 const router = useRouter()
@@ -15,11 +18,12 @@ const router = useRouter()
 </script>
 
 <style scoped>
-.app-can {
-  width: 100vw;
-  height: calc(var(--vh, 1vh) * 100);
+.page-content {
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: orange
 }
 </style>

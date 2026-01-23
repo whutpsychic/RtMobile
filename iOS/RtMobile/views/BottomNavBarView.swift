@@ -49,7 +49,7 @@ struct BottomNavigationBar: View {
                     }
                 }
             }
-            .frame(height: visible ? 40 : 20)
+            .frame(height: visible ? 50 : 25)
             .frame(maxWidth: .infinity)
             .background(Color(.systemBackground))
             .overlay(
@@ -62,7 +62,7 @@ struct BottomNavigationBar: View {
             .shadow(color: Color.black.opacity(0.1), radius: 5, x: 0, y: -2)
             
         }
-        .offset(y: visible ? 5 : 25) // 隐藏时向下偏移
+        .offset(y: visible ? 0 : 0) // 隐藏时向下偏移
         .animation(.easeInOut(duration: 0.2), value: visible)
     }
 }

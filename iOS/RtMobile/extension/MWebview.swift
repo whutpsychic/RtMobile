@@ -186,6 +186,8 @@ struct MWebView: UIViewRepresentable {
         context.coordinator.scrollViewDelegate = ScrollViewDelegate(manager: manager)
         webView.scrollView.delegate = context.coordinator.scrollViewDelegate
         
+        webView.scrollView.contentInsetAdjustmentBehavior = .never // 关键：禁用自动调整
+        
         // 只在创建时加载一次 URL
         if let urlString = url, let url = URL(string: urlString) {
             webView.load(URLRequest(url: url))

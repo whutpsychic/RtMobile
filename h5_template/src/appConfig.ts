@@ -10,9 +10,8 @@ export default {
   // 测试时自动填充的用户名和密码
   testUsername: "admin",
   testUserpsw: "123456",
-
   // 免登录(仅测试时，即 developing 为 true 时有效)
-  nologin: false,
+  nologin: true,
 
   // 网络请求超时时间：10s
   timeout: 10 * 1000,

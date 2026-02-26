@@ -1,0 +1,21 @@
+本文当讲述如何复用 Android 模板
+
+1.android studio 创建一个空app。
+2.复制 src/main/res/xml/network_security_config.xml 到新项目中。
+3.复制 src/main/AndroidManifest.xml 到新项目中。
+4.复制 src/main/java/com/rtlink/<包名>/ 下的所有文件到新项目中。
+5.全局替换复制的文件的包名。
+6.将 src/main/res/values/themes.xml 内的主题名改为 RtMobile。
+7.复制 src/main/res/drawable/icon_1024_transp.png 到新项目中。
+8.复制 app/build.gradle.kts 内的 dependencies
+9.复制 grade/libs.versions.toml 内的下三行版本信息。
+10.运行 gradle build
+11.试运行程序。✅
+
+
+
+
+
+
+
+

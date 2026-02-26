@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
+    />
+    <title>Rtmobile App</title>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script>
+      // pda_newland_nls_mt66 顶部安全距离固定为24px，不再单独计算
+      // 注入自定义vh，用以兼容android不支持vh的浏览器
+      function setupvh() {
+        var vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", vh + "px");
+      }
+      function setupSafeTop() {
+        document.documentElement.style.setProperty("--safe-area-top", 24 + "px");
+      }
+      window.addEventListener("resize", () => {
+        // 视口变化触发重新计算
+        setupvh();
+        setupSafeTop();
+      });
+      
+      window.addEventListener("load", () => {
+        // 视口变化触发重新计算
+        setupvh();
+        setupSafeTop();
+      });
+      
+    </script>
+    <script src="/serverConfig.js"></script>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

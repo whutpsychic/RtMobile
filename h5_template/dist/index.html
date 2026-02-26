@@ -8,11 +8,61 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no"
     />
     <title>Rtmobile App</title>
-    <script type="module" crossorigin src="./assets/index-CQM8TyZz.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-RKd0NDUD.css">
+    <script type="module" crossorigin src="./assets/index-C7lQlpb_.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-B2Xznvmb.css">
+    <script type="module">import.meta.url;import("_").catch(()=>1);(async function*(){})().next();if(location.protocol!="file:"){window.__vite_is_modern_browser=true}</script>
+    <script type="module">!function(){if(window.__vite_is_modern_browser)return;console.warn("vite: loading legacy chunks, syntax error above and the same error below should be ignored");var e=document.getElementById("vite-legacy-polyfill"),n=document.createElement("script");n.src=e.src,n.onload=function(){System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))},document.body.appendChild(n)}();</script>
   </head>
   <body>
     <div id="app"></div>
+    <script>
+      // 注入自定义vh，用以兼容android不支持vh的浏览器
+      function setupvh() {
+        var vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty("--vh", vh + "px");
+      }
+      // 通过计算样式获取安全区域顶部偏移
+      function getSafeAreaTop() {
+        // 创建一个临时元素来计算环境变量
+        const tempDiv = document.createElement("div");
+        tempDiv.style.position = "absolute";
+        tempDiv.style.top = "env(safe-area-inset-top, 0px)";
+        document.body.appendChild(tempDiv);
+
+        const computedStyle = window.getComputedStyle(tempDiv);
+        const topOffset = parseFloat(computedStyle.top);
+
+        document.body.removeChild(tempDiv);
+        return topOffset ? topOffset : 32;
+      }
+      function setupSafeTop() {
+        // 使用示例
+        var safeAreaTop = getSafeAreaTop();
+        console.log("安全区域顶部偏移:", safeAreaTop, "px");
+
+        // 在 CSS 中也可以直接使用
+        // document.documentElement.style.setProperty(
+        //   "--safe-area-top",
+        //   `env(safe-area-inset-top, ${safeAreaTop}px)`,
+        // );
+        document.documentElement.style.setProperty("--safe-area-top", safeAreaTop + "px");
+      }
+      window.addEventListener("resize", () => {
+        // 视口变化触发重新计算
+        setupvh();
+        setupSafeTop();
+      });
+      
+      window.addEventListener("load", () => {
+        // 视口变化触发重新计算
+        setupvh();
+        setupSafeTop();
+      });
+      
+    </script>
     <script src="./serverConfig.js"></script>
+    <script nomodule>!function(){var e=document,t=e.createElement("script");if(!("noModule"in t)&&"onbeforeload"in t){var n=!1;e.addEventListener("beforeload",(function(e){if(e.target===t)n=!0;else if(!e.target.hasAttribute("nomodule")||!n)return;e.preventDefault()}),!0),t.type="module",t.src=".",e.head.appendChild(t),t.remove()}}();</script>
+    <script nomodule crossorigin id="vite-legacy-polyfill" src="./assets/polyfills-legacy-De-0HyBu.js"></script>
+    <script nomodule crossorigin id="vite-legacy-entry" data-src="./assets/index-legacy-BHw_XZaU.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('data-src'))</script>
   </body>
 </html>

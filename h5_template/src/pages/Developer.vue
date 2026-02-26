@@ -15,10 +15,6 @@
         <van-button type="primary" block class="btn" @click="onSetScreenHorizontal">切为横屏</van-button>
         <van-button type="primary" block class="btn" @click="onSetScreenPortrait">切为竖屏</van-button>
         <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
-        <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
-        <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
-        <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
-        <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
         <p class="text">扫码结果: {{ result }}</p>
       </div>
     </div>

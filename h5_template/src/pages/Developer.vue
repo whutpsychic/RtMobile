@@ -2,7 +2,7 @@
   <AppCan>
     <div class="page-content">
       <header>
-        <img alt="Vue logo" class="logo" src="@/assets/logo.png" width="100" height="100" />
+        <img alt="Rtlink logo" class="logo" src="@/assets/logo.png" width="100" height="100" />
       </header>
       <div class="btns">
         <van-uploader v-model="files" />

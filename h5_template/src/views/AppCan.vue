@@ -11,7 +11,7 @@
 <style scoped>
 .app-can {
   width: 100vw;
-  height: calc(var(--vh, 1vh) * 100);
+  height: 100vh;
   padding-top: var(--safe-area-top);
   background-color: purple
 }

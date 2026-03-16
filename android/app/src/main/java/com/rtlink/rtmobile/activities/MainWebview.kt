@@ -41,6 +41,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
@@ -94,10 +95,19 @@ class WebViewActivity : ComponentActivity() {
         }
     }
 
-    // 关键修复：处理屏幕旋转（刷新网页）
+    // 关键修复：处理屏幕旋转（刷新VH计算）
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-//        currentWebView?.reload()
+        // 旋转屏幕时重新计算VH
+        currentWebView?.post {
+            currentWebView?.evaluateJavascript(
+                """
+                    var vh = window.innerHeight * 0.01;
+                    document.documentElement.style.setProperty("--vh", vh + "px");
+                """.trimIndent(),
+                null
+            )
+        }
     }
 
     // 提供公共方法供外部调用
@@ -144,6 +154,44 @@ fun WebViewScreen(
     // 文件上传模式（默认单选）
     // 0 = 单选 1 = 多选
     var currentFileChooserMode by remember { mutableIntStateOf(SINGLE_FILE_CHOOSER_CODE) } // 0 = single, 1 = multi
+
+    // 修复VH的核心方法
+    // 修复VH的核心方法（修正window变量错误）
+    fun fixVhCalculation(webView: WebView) {
+        val js = """
+        (function () {
+            // 计算真实的VH值（排除导航栏/地址栏）- 这里的window是JS环境的，正确
+            var vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty("--vh", vh + "px");
+            
+            // 全局替换VH的CSS规则（兼容原有vh写法）
+            var style = document.createElement("style");
+            style.innerHTML = `
+                :root {
+                    --vh: ` + vh + `px; /* 修正：用JS变量拼接，而非Kotlin模板 */
+                }
+                /* 让原有vh写法自动兼容 */
+                * {
+                    --vh-fallback: calc(var(--vh, 1vh) * 1);
+                }
+            `;
+            document.head.appendChild(style);
+
+            // 监听窗口大小变化，实时更新VH
+            window.addEventListener('resize', () => {
+                var vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty("--vh", vh + "px");
+            });
+            
+            // 强制重绘页面
+            document.body.style.display = 'none';
+            document.body.offsetHeight; // 触发重绘
+            document.body.style.display = '';
+        })();
+    """.trimIndent()
+
+        webView.evaluateJavascript(js, null)
+    }
 
     // 拍照启动器(选择文件用)
     val cameraLauncher = rememberLauncherForActivityResult(
@@ -286,6 +334,13 @@ fun WebViewScreen(
                 WindowInsets.navigationBars // 导航栏
                     .union(WindowInsets.ime) // 输入法
             )
+            .onSizeChanged { size ->
+                if (size.width > 0 && size.height > 0 && webView != null) {
+                    webView?.post {
+                        fixVhCalculation(webView!!)
+                    }
+                }
+            }
     ) {
         AndroidView(
             factory = { context ->
@@ -302,6 +357,9 @@ fun WebViewScreen(
                         // 离线配置（关键）
                         allowFileAccessFromFileURLs = true
                         allowUniversalAccessFromFileURLs = true
+
+                        // 基础配置（与XML模式保持一致）
+                        builtInZoomControls = false
                     }
 
                     webViewClient = object : WebViewClient() {
@@ -318,32 +376,9 @@ fun WebViewScreen(
                         override fun onPageFinished(view: WebView?, url: String?) {
                             isLoading = false
 
-                            if (!firstLoaded) {
-                                // 修复css vh 失效的问题：注入动态高度计算(并未在此执行)
-                                val js = """
-                        // 注入自定义vh，用以兼容android不支持vh的浏览器
-      (function () {
-        var vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty("--vh", vh + "px");
-        var style = document.createElement("style");
-        style.innerHTML = `
-                                body {
-                                    height: calc(var(--vh, 1vh) * 100);
-                                    overflow: hidden;
-                                }
-                            `;
-        document.head.appendChild(style);
-        
-        window.addEventListener('resize', () => {
-          // 视口变化触发重新计算
-          var vh = window.innerHeight * 0.01;
-          document.documentElement.style.setProperty("--vh", vh + "px");
-        })
-      })();
-                    """.trimIndent()
-
-//                                view?.evaluateJavascript(js, null)
-
+                            if (!firstLoaded && view != null) {
+                                // 关键修改2：恢复并执行VH修复JS
+                                fixVhCalculation(view)
                                 firstLoaded = true
                             }
                         }

@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.rtlink.rtmobile.R
+import com.rtlink.rtmobile.defaultUrl
 import com.rtlink.rtmobile.offlineMode
 import com.rtlink.rtmobile.ui.RtmobileTheme
 import kotlinx.coroutines.delay
@@ -74,7 +75,13 @@ fun PreOpenScreen() {
 
             // 如果没有配置 URL，跳转到配置页面
             if (localUrl.isNullOrEmpty() && !alreadyGone) {
-                context.startActivity(Intent(context, URLConfigActivity::class.java))
+//                context.startActivity(Intent(context, URLConfigActivity::class.java))
+                // 如果没有url则加载默认url
+                context.startActivity(
+                    Intent(context, WebViewActivity::class.java).apply {
+                        putExtra("url", defaultUrl)
+                    }
+                )
             }
             // 如果有 URL，直接跳转到主显示页
             else if (!alreadyGone) {
@@ -85,6 +92,7 @@ fun PreOpenScreen() {
                     }
                 )
             }
+
         }
 
     }

@@ -112,7 +112,7 @@ const onScan = async () => {
 
 <style scoped>
 .page-content {
-  height: calc(var(--vh, 1vh) * 100);
+  height: 100vh;
   overflow: auto;
   background-color: white;
 }
@@ -124,7 +124,7 @@ header {
 }
 
 .logo {
-  margin-top: calc(var(--vh, 1vh) * 10);
+  margin-top: 10vh;
 }
 
 .btns {

@@ -1,6 +1,6 @@
 {
   "name": "rtlink-mbridge",
-  "version": "0.26.0",
+  "version": "0.26.2",
   "description": "Rtlink mobile frame work for android&iOS, powered by zbc0012.",
   "main": "dist/index.js",
   "module": "./dist/index.mjs",     

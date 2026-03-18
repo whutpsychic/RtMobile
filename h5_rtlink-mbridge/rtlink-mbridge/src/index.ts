@@ -19,6 +19,7 @@ import {
   checkoutNetwork as checkoutNetworkAndroid,
   setScreenHorizontal as setScreenHorizontalAndroid,
   setScreenPortrait as setScreenPortraitAndroid,
+  toastAndroid,
 } from './android'
 
 interface RTMobileBridge {
@@ -47,6 +48,7 @@ const rtm: RTMobileBridge = {
 // 初始化逻辑
 export default rtm
 export { isIOS, isAndroid }
+export { toastAndroid }
 
 // 【 获取设备信息 】
 // -------------- iOS / Android --------------

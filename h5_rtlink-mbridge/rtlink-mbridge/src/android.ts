@@ -66,3 +66,8 @@ export const scan: () => Promise<string> = async () => {
     window.rtmobile.callbacks.afterScan = resolve
   })
 }
+
+// toastAndroid
+export const toastAndroid = (str: string) => {
+  window.Android.showToast(str)
+}

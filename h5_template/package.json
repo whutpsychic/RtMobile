@@ -20,7 +20,7 @@
     "jsencrypt": "^3.3.2",
     "pinia": "^2.1.7",
     "regenerator-runtime": "^0.14.1",
-    "rtlink-mbridge": "^0.26.0",
+    "rtlink-mbridge": "^0.26.2",
     "vant": "^4.9.20",
     "vue": "^3.4.29",
     "vue-router": "^4.3.3"

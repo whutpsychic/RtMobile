@@ -15,6 +15,7 @@
         <van-button type="primary" block class="btn" @click="onSetScreenHorizontal">切为横屏</van-button>
         <van-button type="primary" block class="btn" @click="onSetScreenPortrait">切为竖屏</van-button>
         <van-button type="primary" block class="btn" @click="onScan">扫描二维码</van-button>
+        <van-button type="primary" block class="btn" @click="onToast">toast (Android only)</van-button>
         <p class="text">扫码结果: {{ result }}</p>
       </div>
     </div>
@@ -25,7 +26,7 @@
 import { ref, type Ref } from 'vue'
 import AppCan from '@/views/AppCan.vue'
 import rtm from 'rtlink-mbridge'
-// import { isIOS, isAndroid } from 'rtlink-mbridge'
+import { isIOS, isAndroid, toastAndroid } from 'rtlink-mbridge'
 import {
   scan,
   getDeviceInfo,
@@ -48,9 +49,13 @@ const files = ref([])
 
 // }
 
+const onToast = () => {
+  toastAndroid("这是一段显示内容")
+}
+
 // 写入本地缓存
 const onWriteLocal = async () => {
-  await writeLocal('key1', 'value111111', 5)
+  await writeLocal('key1', 'value111111', 50)
   showToast('写入成功')
 }
 

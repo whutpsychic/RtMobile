@@ -13,9 +13,13 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import com.rtlink.mobileo.R
 import com.rtlink.mobileo.defaultWebUrl
 import com.rtlink.mobileo.utils.LocalStorage
+import androidx.core.content.edit
+import com.rtlink.mobileo.developing
 
 class WebViewIPConfigActivity : ComponentActivity() {
 
@@ -24,6 +28,9 @@ class WebViewIPConfigActivity : ComponentActivity() {
     private lateinit var httpsRadio: RadioButton
     private lateinit var inputEt: EditText
     private lateinit var desTv: TextView
+
+    // 启动器声明不变
+    lateinit var scanLauncher: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +50,38 @@ class WebViewIPConfigActivity : ComponentActivity() {
 
         // 绑定按钮点击事件
         bindButtonClick()
+
+        // 扫码启动器
+        scanLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val data: Intent? = result.data
+                    val scannedResult = data?.extras?.getString("code")
+
+                    // 有结果
+                    if (!scannedResult.isNullOrBlank()) {
+                        // 它是一个有效的非空字符串（有内容）
+                        if (developing) {
+                            println(" --------------------------- result: $scannedResult ")
+                        }
+                        analyzeScannedUrl(scannedResult)
+                    }
+                    // 用户主动退出
+                    else {
+                        if (developing) {
+                            println(" --------------------------- 用户backup ")
+                        }
+                    }
+                }
+            }
+
+        // 获取二维码图标控件
+        val ivQrCode: ImageView = findViewById(R.id.iv_qr_code)
+
+        // 扫码以填充地址
+        ivQrCode.setOnClickListener {
+            scanLauncher.launch(Intent(this, ScanningActivity::class.java))
+        }
     }
 
     /**
@@ -61,6 +100,7 @@ class WebViewIPConfigActivity : ComponentActivity() {
     private fun initToolbar() {
         val backBtn: ImageView = findViewById(R.id.iv_back)
         backBtn.setOnClickListener {
+            setResult(Activity.RESULT_OK, intent)
             finish()
         }
     }
@@ -109,7 +149,7 @@ class WebViewIPConfigActivity : ComponentActivity() {
         okBtn.setOnClickListener {
             val url = getCurrUrl()
             val sharedPref = this.getSharedPreferences("RtmobilePrefs", Context.MODE_PRIVATE)
-            sharedPref.edit().putString("localUrl", url).apply()
+            sharedPref.edit { putString("localUrl", url) }
 
             val intent = Intent().putExtra("url", url)
             setResult(Activity.RESULT_OK, intent)
@@ -121,12 +161,41 @@ class WebViewIPConfigActivity : ComponentActivity() {
      * 解析默认地址并填充表单
      */
     private fun analyzeInitUrl() {
-        val localStorage = LocalStorage(this)
-        val localUrl = localStorage.read("localUrl", defaultWebUrl)
+        val sharedPref = this.getSharedPreferences("RtmobilePrefs", Context.MODE_PRIVATE)
+        val localUrl = sharedPref.getString("localUrl", defaultWebUrl)
 
         val resultArr = localUrl?.split("://")
         val httpStr = resultArr?.getOrNull(0) ?: "http"
         val urlStr = resultArr?.getOrNull(1) ?: defaultWebUrl.split("://")[1]
+
+        // 设置Radio选中状态
+        when (httpStr.lowercase()) {
+            "http" -> {
+                httpRadio.isChecked = true
+                httpsRadio.isChecked = false
+            }
+
+            "https" -> {
+                httpRadio.isChecked = false
+                httpsRadio.isChecked = true
+            }
+
+            else -> {
+                httpRadio.isChecked = true
+                httpsRadio.isChecked = false
+            }
+        }
+
+        // 填充输入框
+        inputEt.setText(urlStr)
+        // 初始化des文本
+        updateDesText()
+    }
+
+    private fun analyzeScannedUrl(url: String) {
+        val resultArr = url.split("://")
+        val httpStr = resultArr.getOrNull(0) ?: "http"
+        val urlStr = resultArr.getOrNull(1) ?: defaultWebUrl.split("://")[1]
 
         // 设置Radio选中状态
         when (httpStr.lowercase()) {

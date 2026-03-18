@@ -13,4 +13,4 @@ const val RAM_NAME: String = "rtmobile" // RAM名称
 // 直接加载本地html
 const val OFFLINE_MODE: Boolean = false // 离线模式
 
-const val defaultWebUrl: String = "http://192.168.1.173:8080/" // 默认加载的地址
+const val defaultWebUrl: String = "http://192.168.1.178:8080/" // 默认加载的地址

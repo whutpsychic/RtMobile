@@ -4,8 +4,9 @@
  - 如果您需要配置服务器地址，请关注/public/serverConfig.js。
  - 并结合/src/utils/index#getURLByType方法配合修改。
 
-## 【 关于 css vh 】
- - 部分android机内置的浏览器似乎不支持vh计量单位，所以预置了自定义的变量 --vh 用以兼容这些机型。
+## 【 关于开发和调试 】
+ - 使用@Compose开发模式的框架使内置浏览器不支持vh计量单位，所以预置了自定义的变量 --vh 用以兼容这种情况。而 xml+kotlin 开发模式则不会发生这种情况。
+ - 在某些PDA的老旧机型中，@Compose开发模式不仅无法正常响应 npm run dev ，得用 npm run preview 预览效果；而且还可能发生使得html当中的某些元素无法正常显示。所以目前来看还是xml+kotlin这种传统开发模式效果更稳定。
 
 ## 【 关于原生接口与地址配置 】
  - 当您看到瑞太logo时点击logo图标即可跳转至地址配置页，配置的地址长期有效。

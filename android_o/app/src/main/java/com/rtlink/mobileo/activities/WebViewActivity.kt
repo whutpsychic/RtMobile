@@ -320,7 +320,6 @@ class WebViewActivity : ComponentActivity() {
     override fun onBackPressed() {
         if (currentWebView != null) {
             if (currentWebView!!.canGoBack()) currentWebView!!.goBack()
-            else super.onBackPressed() // 新增：无后退历史时关闭页面
         }
     }
 

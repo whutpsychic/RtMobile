@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Rtlink App</string>
+    <string name="app_logo_text">Rtlink logo</string>
+    <string name="no_network">没有网络连接</string>
+    <string name="no_network_tip">您已断开网络连接</string>
+    <string name="network_error_tip">请检查系统设置或检查网络环境</string>
+</resources>

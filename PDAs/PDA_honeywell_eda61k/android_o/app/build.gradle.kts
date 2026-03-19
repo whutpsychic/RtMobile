@@ -5,13 +5,13 @@ plugins {
 }
 
 android {
-    namespace = "com.rtlink.mobileo"
+    namespace = "com.rtlink.pda_honeywell_eda61k"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.rtlink.mobileo"
+        applicationId = "com.rtlink.pda_honeywell_eda61k"
         minSdk = 28
         targetSdk = 36
         versionCode = 1
@@ -48,6 +48,7 @@ dependencies {
     implementation(libs.androidx.webkit)
     implementation(libs.barcode.scanning)
     implementation(libs.androidx.camera.camera2)
+    implementation(files("libs/DataCollection.aar"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

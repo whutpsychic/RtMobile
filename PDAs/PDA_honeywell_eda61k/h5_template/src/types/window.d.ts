@@ -13,6 +13,6 @@ interface Window {
   serverURL: string
   // 服务器端口号
   ports: windowPorts,
-  
+  //
   onDeviceScan: Function
 }

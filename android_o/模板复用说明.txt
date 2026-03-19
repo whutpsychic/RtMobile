@@ -1,17 +1,29 @@
 本文当讲述如何复用 Androido 模板
 
+【 start 】
 1.android studio 创建一个空app。
-2.复制 src/main/res/xml/network_security_config.xml 和 file_paths.xml 到新项目中。
-3.复制 src/main/AndroidManifest.xml 到新项目中。
-4.复制 src/main/java/com/rtlink/<包名>/ 下的所有文件到新项目中。
-5.全局替换复制的文件的包名。(应该有 处匹配)
 
-6.复制 src/main/res/layout 文件夹到对应位置。
-7.复制 src/main/res/drawable/icon_1024_transp.png 到新项目中。
-8.复制 app/build.gradle.kts 内的 dependencies
-9.复制 grade/libs.versions.toml 内的关键版本号信息。
-10.运行 gradle build
-11.试运行程序。✅
+【 AndroidManifest.xml 】
+2.替换 src/main/AndroidManifest.xml 到新项目中。
+
+【 src/main/res/ 】
+3.复制替换 drawable/ 下的所有文件到新项目中，并删掉 _background 和 _foregournd。
+4.复制 layout/ 下的所有文件到新项目中。
+5.复制替换 mipmap-anydpi/ 下的所有文件到新项目中。
+6.复制替换 values/ 下除 colors 的所有.xml文件到新项目中。
+7.复制替换 xml/ 下的所有.xml文件到新项目中。
+
+【 src/main/java/ 】
+8.复制 com/rtlink/<包名>/ 下的所有文件到新项目中。
+9.全局替换复制的文件的包名。(应该有 44 处匹配)
+
+【 build.gradle 】
+10.复制 app/build.gradle.kts 内的 dependencies
+11.复制 grade/libs.versions.toml 内的关键版本号信息。(下6行)
+12.运行 gradle build
+
+【 finish 】
+13.试运行程序。✅
 
 
 

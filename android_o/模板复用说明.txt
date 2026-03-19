@@ -7,10 +7,10 @@
 2.替换 src/main/AndroidManifest.xml 到新项目中。
 
 【 src/main/res/ 】
-3.复制替换 drawable/ 下的所有文件到新项目中，并删掉 _background 和 _foregournd。
+3.复制替换 drawable/ 下的所有文件到新项目中。
 4.复制 layout/ 下的所有文件到新项目中。
 5.复制替换 mipmap-anydpi/ 下的所有文件到新项目中。
-6.复制替换 values/ 下除 colors 的所有.xml文件到新项目中。
+6.复制替换 values/ 下的所有.xml文件到新项目中。
 7.复制替换 xml/ 下的所有.xml文件到新项目中。
 
 【 src/main/java/ 】
